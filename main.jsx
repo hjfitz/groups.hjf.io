@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {render} from 'react-dom'
 import Peer from 'peerjs'
+import {Router, Link, navigate} from '@reach/router'
 
 const entry = document.getElementById('main')
 // hack to get hooks working with snowpack
@@ -28,8 +29,8 @@ const ParticipantPlayer = ({id, stream}) => {
 	}, [])
 
 	return (
-		<div>
-			<p>peer: {id}</p>
+		<div className="relative">
+			<p className="absolute bottom-0 left-0 opacity-80 z-10">peer: {id}</p>
 			<video ref={player} />
 		</div>
 	)
@@ -82,19 +83,12 @@ const Host = () => {
 	}, [participants])
 
 	return (
-		<main>
-			<section>
-				<p>debug</p>
-				<p>id: {id.current}</p>
-				<p>participants: <Stringify json={participants} /></p>
-			</section>
-			<section>
-				<h2>you</h2>
-				<video muted ref={vid} />
-			</section>
-			<section>
-				<h2>peers</h2>
-				{/* some map happens here? */}
+		<main className="bg-gray-900 text-white h-full">
+			<section className="flex">
+				<div className="m-4 relative">
+					<p className="bg-black absolute z-10 bottom-0 py-1 px-4 opacity-80">{id.current}</p>
+					<video className="self" muted ref={vid} />
+				</div>
 				{participants.map(participant => (
 					<ParticipantPlayer 
 						key={participant.id} 
@@ -106,33 +100,14 @@ const Host = () => {
 	)
 }
 
-const ParticipantPeer = ({id, stream, peer}) => {
-	const vid = useRef(null)
-
-	// if no stream, dial and get a response
-	useEffect(() => {
-		vid.current.srcObject = stream 
-		vid.current.play()
-	}, [])
-
-	return (
-		<div>
-			<p>peer {id}</p>
-			<video ref={vid} />
-		</div>
-	)
-}
-
-const Participant = () => {
+const Participant = (props) => {
 	const idInit = randID()
 	const id = useRef(idInit)
 	const peer = useRef(new Peer(idInit))
 	const vid = useRef(null)
 	const stream = useStream()
 	const [allPeers, setPeers] = useState([])
-	const [streams, setStreams] = useState([])
 	const [host, setHost] = useState(null)
-	const [isConnected, setConnected] = useState(false)
 
 	useEffect(() => {
 		if (!stream || !host) return
@@ -157,6 +132,11 @@ const Participant = () => {
 		if (!stream) return
 		vid.current.srcObject = stream
 		vid.current.play()
+		const {id} = props
+		console.log('negotiating session with host', id)
+		const conn = peer.current.connect(id) 
+		// should notify the host of a new peer; host can then join
+		setHost(conn)
 	}, [stream])
 
 	useEffect(() => {
@@ -177,16 +157,6 @@ const Participant = () => {
 		console.log(allPeers)
 	}, [allPeers])
 
-	const tryJoin = (ev) => {
-		if (ev.key !== 'Enter') return
-		const {value: id} = ev.target
-		console.log('negotiating session with host', id)
-		const conn = peer.current.connect(id) 
-		// should notify the host of a new peer; host can then join
-		setHost(conn)
-	}
-
-
 	return (
 		<main>
 			<section>
@@ -194,13 +164,6 @@ const Participant = () => {
 				<p>your id {id.current}</p>
 				<p>connected: {(!!host).toString()}</p>
 				<p>All peers: <Stringify json={allPeers.map(peer => peer.id)} /></p>
-			</section>
-			<section>
-				<h1>join a room</h1>
-				<label>
-					room id:
-					<input onKeyUp={tryJoin} />
-				</label>
 			</section>
 
 			<section>
@@ -210,8 +173,7 @@ const Participant = () => {
 			<section>
 				<h2>them</h2>
 				{allPeers.map(peer => (
-					<ParticipantPeer 
-						peer={peer}
+					<ParticipantPlayer
 						key={peer.id} 
 						{...peer} 
 					/>
@@ -221,28 +183,51 @@ const Participant = () => {
 	)
 }
 
+const Home = () => (
+	<main className="bg-gray-900 text-white flex flex-col h-full justify-center items-center">
+		<h1 className="text-3xl">Are you hosting or joining?</h1>
+		<div className="flex text-center mt-2">
+			<Link className="btn" to="/host">Hosting</Link>
+			<Link className="btn" to="/join">Joining</Link>
+		</div>
+	</main>
+)
+
+const Connector = () => {
+	const input = useRef(null)
+
+	const keyNav = ({key}) => {
+		if (key === 'Enter') nav()
+	}
+
+	const nav = () => {
+		const {value} = input.current
+		navigate(`/room/${value}`)
+	}
+
+	return (
+		<main className="bg-gray-900 text-white h-full flex flex-col items-center justify-center">
+			<div className="w-64">
+				<input className="w-full mb-2 text-black rounded p-2" ref={input} onKeyUp={keyNav} placeholder="Enter the Peer ID here" />
+			</div>
+			<p onClick={nav} className="btn text-center">Connect</p>
+		</main>
+	)
+}
+
+
+
 ////// 		//
 // main app //
 ///// 		//
-const App = () => {
-	const HOST = 'host'
-	const PARTICIPANT = 'participant'
-	const [peerType, setPeerType] = useState(null)
-	const setType = (type) => () => setPeerType(type)
+const App = () => (
+	<Router className="h-full">
+		<Home path="/" />
+		<Host path="/host" />
+		<Connector path="/join" />
+		<Participant path="/room/:id" />
+	</Router>
+)
 
-	if (!peerType) {
-		return (
-			<main>
-				<h1>Are you hosting or joining?</h1>
-				<p onClick={setType(HOST)}>Host</p>
-				<p onClick={setType(PARTICIPANT)}>Joining</p>
-			</main>
-		)
-	} else if (peerType === HOST) {
-		return <Host />
-	} else if (peerType === PARTICIPANT) {
-		return <Participant />
-	}
-}
 
 render(<App />, entry)
