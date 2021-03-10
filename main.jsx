@@ -30,7 +30,7 @@ const ParticipantPlayer = ({id, stream}) => {
 
 	return (
 		<div className="relative">
-			<p className="absolute bottom-0 left-0 opacity-80 z-10">peer: {id}</p>
+			<p className="absolute bottom-0 left-0 opacity-80 z-10">{id}</p>
 			<video ref={player} />
 		</div>
 	)
