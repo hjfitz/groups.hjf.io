@@ -11,12 +11,14 @@ import {
 
 
 const App = () => (
-	<Router className="h-full">
-		<Home path="/" />
-		<Host path="/host" />
-		<Connector path="/join" />
-		<Participant path="/room/:id" />
-	</Router>
+	<div className="h-full text-white bg-gray-900">
+		<Router className="h-full">
+			<Home path="/" />
+			<Host path="/host" />
+			<Connector path="/join" />
+			<Participant path="/room/:id" />
+		</Router>
+	</div>
 )
 
 const entry = document.getElementById('main')

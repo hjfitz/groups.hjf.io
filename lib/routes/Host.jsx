@@ -10,13 +10,14 @@ const Host = () => {
 	const idInit = randID()
 	const id = useRef(idInit)
 	const peer = useRef(new Peer(idInit))
-	const vid = useRef(null)
 	const stream = useStream()
 	// shoud follow form { id: $id, called: true/false }
 	const [participants, setParticipants] = useState([])
 
 	useEffect(() => {
 		if (!stream) return
+
+		// on webcam availability, we can now listen for connections
 		peer.current.on('connection', (conn) => {
 			const dial = peer.current.call(conn.peer, stream)
 			console.log(`calling ${conn.peer}`)
@@ -25,6 +26,7 @@ const Host = () => {
 					const newPeer = {id: conn.peer, stream: peerStream}
 					const hasPeer = cur.some(ptp => ptp.id === conn.peer)
 					if (hasPeer) return cur
+					// spread don't push as react does a shallow check
 					return [...cur, newPeer]
 				})
 			})
@@ -35,31 +37,28 @@ const Host = () => {
 		if (!participants.length) return
 		participants.forEach((ptp) => {
 			const conn = peer.current.connect(ptp.id)
+			const listToShare = participants.filter(pp => pp.id !== ptp.id).map(pp => pp.id)
 			conn.on('open', () => {
 				conn.send(JSON.stringify({
-					type: 'peers', 
-					list: participants
-						.filter(pp => pp.id !== ptp.id)
-						.map(pp => pp.id)
+					type: 'peer.list', 
+					list: listToShare
 				}))
 			})
 		})
 	}, [participants])
 
 	return (
-		<main className="h-full text-white bg-gray-900">
-			<section className="flex">
-				{/* self */}
-				<PeerParticipant id={id.current} stream={stream} />
+		<section className="flex flex-wrap">
+			{/* self */}
+			<PeerParticipant self id={id.current} stream={stream} />
 
-				{participants.map(participant => (
-					<PeerParticipant
-						key={participant.id} 
-						{...participant} 
-					/>
-				))}
-			</section>
-		</main>
+			{participants.map(participant => (
+				<PeerParticipant
+					key={participant.id} 
+					{...participant} 
+				/>
+			))}
+		</section>
 	)
 }
 

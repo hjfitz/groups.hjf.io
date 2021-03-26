@@ -16,3 +16,11 @@ export function useStream() {
 	return stream
 }
 
+export function copy(ev) {
+	const rng = document.createRange()
+	rng.selectNode(ev.target)
+	window.getSelection().removeAllRanges()
+	window.getSelection().addRange(rng)
+	document.execCommand('copy')
+	window.getSelection().removeAllRanges()
+}

@@ -33,14 +33,12 @@ const Participant = (props) => {
 		})
 	}, [stream, host])
 
-	// on streaming cam
+	// on streaming cam, connect to room
 	useEffect(() => {
 		if (!stream) return
-		vid.current.srcObject = stream
-		vid.current.play()
-		const {id} = props
-		console.log('negotiating session with host', id)
-		const conn = peer.current.connect(id) 
+		console.log('negotiating session with host', props.id)
+		const conn = peer.current.connect(props.id) 
+
 		// should notify the host of a new peer; host can then join
 		setHost(conn)
 	}, [stream])
@@ -49,6 +47,7 @@ const Participant = (props) => {
 		if (!stream) return
 		peer.current.on('connection', (conn) => {
 			conn.on('data', (data) => {
+				// do something ot check the correspondence type -- at some point
 				const {list} = JSON.parse(data)
 				console.log({list})
 				list.forEach(pr => {
@@ -59,33 +58,16 @@ const Participant = (props) => {
 		})
 	}, [stream])
 
-	useEffect(() => {
-		console.log(allPeers)
-	}, [allPeers])
-
 	return (
-		<main>
-			<section>
-				<p>debug</p>
-				<p>your id {id.current}</p>
-				<p>connected: {(!!host).toString()}</p>
-				<p>All peers: <Stringify json={allPeers.map(peer => peer.id)} /></p>
-			</section>
-
-			<section>
-				<h2>you</h2>
-				<video muted ref={vid} />
-			</section>
-			<section>
-				<h2>them</h2>
-				{allPeers.map(peer => (
-					<PeerParticipant
-						key={peer.id} 
-						{...peer} 
-					/>
-				))}
-			</section>
-		</main>
+		<section className="flex flex-wrap">
+			<PeerParticipant self id={id.current} stream={stream} />
+			{allPeers.map(peer => (
+				<PeerParticipant
+					key={peer.id} 
+					{...peer} 
+				/>
+			))}
+		</section>
 	)
 }
 

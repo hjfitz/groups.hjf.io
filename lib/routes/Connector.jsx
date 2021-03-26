@@ -17,7 +17,7 @@ const Connector = () => {
 	}
 
 	return (
-		<main className="flex flex-col items-center justify-center h-full text-white bg-gray-900">
+		<main className="flex flex-col items-center justify-center">
 			<div className="w-64">
 				<input className="w-full p-2 mb-2 text-black rounded" ref={input} onKeyUp={keyNav} placeholder="Enter the Peer ID here" />
 			</div>
