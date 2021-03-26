@@ -16,11 +16,17 @@ export function useStream() {
 	return stream
 }
 
-export function copy(ev) {
-	const rng = document.createRange()
-	rng.selectNode(ev.target)
-	window.getSelection().removeAllRanges()
-	window.getSelection().addRange(rng)
-	document.execCommand('copy')
-	window.getSelection().removeAllRanges()
+export function copy(id) {
+	return function() {
+		const rng = document.createRange()
+		const el = document.createElement('div')
+		el.textContent = id
+		document.body.appendChild(el)
+		rng.selectNode(el)
+		window.getSelection().removeAllRanges()
+		window.getSelection().addRange(rng)
+		document.execCommand('copy')
+		window.getSelection().removeAllRanges()
+		document.body.removeChild(el)
+	}
 }

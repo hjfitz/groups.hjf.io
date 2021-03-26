@@ -3,10 +3,12 @@ import Peer from 'peerjs'
 
 import {randID, useStream} from '../util'
 import {PeerParticipant} from '../components'
+import {AppContext} from '../main'
 
-const {useRef, useState, useEffect} = React
+const {useRef, useState, useEffect, useContext} = React
 
 const Host = () => {
+	const {name} = useContext(AppContext)
 	const idInit = randID()
 	const id = useRef(idInit)
 	const peer = useRef(new Peer(idInit))
@@ -19,16 +21,29 @@ const Host = () => {
 
 		// on webcam availability, we can now listen for connections
 		peer.current.on('connection', (conn) => {
-			const dial = peer.current.call(conn.peer, stream)
-			console.log(`calling ${conn.peer}`)
-			dial.on('stream', (peerStream) => {
-				setParticipants(cur => {
-					const newPeer = {id: conn.peer, stream: peerStream}
-					const hasPeer = cur.some(ptp => ptp.id === conn.peer)
-					if (hasPeer) return cur
-					// spread don't push as react does a shallow check
-					return [...cur, newPeer]
-				})
+			let peerName
+			conn.on('data', data => {
+				const payload = JSON.parse(data)
+				if (payload.event === 'name.set') {
+					peerName = payload.name
+					const dial = peer.current.call(conn.peer, stream)
+					console.log(`calling ${conn.peer}`)
+					dial.on('stream', (peerStream) => {
+						setParticipants(cur => {
+							const newPeer = {
+								id: conn.peer, 
+								stream: peerStream, 
+								displayName: peerName
+							}
+
+							const hasPeer = cur.some(ptp => ptp.id === conn.peer)
+							if (hasPeer) return cur
+							// spread don't push as react does a shallow check
+							return [...cur, newPeer]
+						})
+					})
+
+				} 
 			})
 		})
 	}, [stream])
@@ -37,11 +52,14 @@ const Host = () => {
 		if (!participants.length) return
 		participants.forEach((ptp) => {
 			const conn = peer.current.connect(ptp.id)
-			const listToShare = participants.filter(pp => pp.id !== ptp.id).map(pp => pp.id)
+			const listToShare = participants
+				.filter(pp => pp.id !== ptp.id)
+				.map(({id, displayName}) => ({id, displayName}))
+
 			conn.on('open', () => {
 				conn.send(JSON.stringify({
-					type: 'peer.list', 
-					list: listToShare
+					event: 'peer.list', 
+					list: [...listToShare, {id: id.current, displayName: name ?? id.current}],
 				}))
 			})
 		})

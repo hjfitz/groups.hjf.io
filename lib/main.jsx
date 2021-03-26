@@ -1,6 +1,8 @@
-import * as React from 'react'
+import React from 'react'
 import {render} from 'react-dom'
 import {Router} from '@reach/router'
+
+const {useState} = React
 
 import {
 	Home,
@@ -9,17 +11,26 @@ import {
 	Participant,
 } from './routes'
 
+export const AppContext = React.createContext({
+	name: null,
+	setName: () => {},
+})
 
-const App = () => (
-	<div className="h-full text-white bg-gray-900">
-		<Router className="h-full">
-			<Home path="/" />
-			<Host path="/host" />
-			<Connector path="/join" />
-			<Participant path="/room/:id" />
-		</Router>
-	</div>
-)
+const App = () => {
+	const [name, setName] = useState(null)
+	return (
+		<div className="min-h-full text-white bg-gray-900">
+			<AppContext.Provider value={{name, setName}}>
+				<Router className="h-full">
+					<Home path="/" />
+					<Host path="/host" />
+					<Connector path="/join" />
+					<Participant path="/room/:id" />
+				</Router>
+			</AppContext.Provider>
+		</div>
+	)
+}
 
 const entry = document.getElementById('main')
 
