@@ -22,28 +22,64 @@ const Participant = (props) => {
 	const {name} = useContext(AppContext)
 	const stream = useStream()
 
-	// peer management
-	const [allPeers, setPeers] = useState([])
+	// call management
+	const [peerConnections, setPeerConnections] = useState([])
+
 	// use this to map names to peers (above)
-	const [peerList, setPeerList] = useState([])
+	const [peerNameMap, setNameMap] = useState([])
+
 	const [host, setHost] = useState(null)
 
-
+	////////////
+	// CONNECT TO THOSE PEERS
+	////////////
 	useEffect(() => {
+		if (!stream) return
+		peer.current.on('connection', (conn) => {
+			conn.on('data', (data) => {
+				const payload = JSON.parse(data)
+				if (payload.event === 'peer.list') {
+					console.log('new peer list get', {payload})
+					payload.list.forEach(({id}) => {
+						peer.current.call(id, stream)
+					})
+					setNameMap(payload.list)
+				}
+			})
+		})
+	}, [stream])
+
+	////////////
+	// PEER CONNECTS TO US
+	////////////
+	useEffect(() => {
+		// only handle calls when we can hook in to the cam
+		// and chat with the host
 		if (!stream || !host) return
 		// on mount
 		peer.current.on('call', (dial) => {
-			console.log(`incoming call from ${dial.peer}`)
-			dial.on('stream', (peerStream) => {
-				setPeers(peers => {
-					const hasPeer = peers.some(ptp => ptp.id === dial.peer)
-					if (hasPeer) return peers
-					return [...peers, {id: dial.peer, stream: peerStream}]
-				})
-			})
+
 			dial.answer(stream)
 			// don't call dial.on('stream' and return the call
 			// all peers dial (send video/audio) one another
+
+			dial.on('stream', (peerStream) => {
+				setPeerConnections((activeConnections) => {
+					const hasPeer = activeConnections.some(conn => conn.id === dial.peer)
+					if (hasPeer) return activeConnections 
+					return [...activeConnections, {id: dial.peer, stream: peerStream}]
+				})
+			})
+
+			dial.on('close', () => {
+				// perform cleanup with setPeerConnections and peers 
+				// ideally we could consolidate peers and peerConnections but race conditions prohibit this
+				// thus we maintain two arrays
+				// todo: name these better
+				setPeerConnections((conns) => {
+					return conns.filter((conn) => conn.id !== dial.peer)
+				})
+			})
 		})
 	}, [stream, host])
 
@@ -66,35 +102,16 @@ const Participant = (props) => {
 		setHost(conn)
 	}, [stream])
 
-	// handle connecting to peers
-	useEffect(() => {
-		if (!stream) return
-		peer.current.on('connection', (conn) => {
-			conn.on('data', (data) => {
-				const payload = JSON.parse(data)
-				if (payload.event === 'peer.list') {
-					console.log('new peer list get', {payload})
-					payload.list.forEach(({id}) => {
-						peer.current.call(id, stream)
-					})
-					setPeerList(payload.list)
-				}
-			})
-		})
-	}, [stream])
 
 
 	function resolvePeerNames() {
-		const resolvedPeers = allPeers
-			.filter(peer => {
-				const exists = peerList.find(pp => pp.id === peer.id)
-				return exists
-			})
-			.map(peer => {
-				const peerWithName = peerList.find(pp => pp.id === peer.id)
-				// rename peerwithname lol
-				peer.displayName = peerWithName?.displayName ?? peer.id
-				return peer
+		const resolvedPeers = peerConnections 
+		// filter as peerNameMap is maintained by our source of truth - host
+			.filter(peer => peerNameMap.find(pp => pp.id === peer.id))
+			.map((peer) => {
+				const namedPeer = peerNameMap.find(pp => pp.id === peer.id)
+				const displayName = namedPeer.displayName ?? peer.id
+				return {...peer, displayName}
 			})
 		return resolvedPeers
 	}
