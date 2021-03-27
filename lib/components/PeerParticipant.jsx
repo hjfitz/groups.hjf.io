@@ -5,6 +5,7 @@ import {AppContext} from '../main'
 
 const {useRef, useEffect, useState, useContext} = React
 
+// todo: potentially split stream in to a context and move this to the root?
 const UserBar = ({stream}) => {
 	const [muted, setMute] = useState(false)
 	function toggleMute() {
@@ -24,7 +25,7 @@ const UserBar = ({stream}) => {
 
 const ParticipantPlayer = ({id, displayName, stream, self}) => {
 	const {name} = useContext(AppContext)
-	if (!displayName && (!self && !name)) {
+	if (!displayName && !name) {
 		displayName = id
 	}
 	const player = useRef(null)

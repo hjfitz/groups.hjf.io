@@ -28,6 +28,7 @@ const Participant = (props) => {
 	const [peerList, setPeerList] = useState([])
 	const [host, setHost] = useState(null)
 
+
 	useEffect(() => {
 		if (!stream || !host) return
 		// on mount
@@ -72,6 +73,7 @@ const Participant = (props) => {
 			conn.on('data', (data) => {
 				const payload = JSON.parse(data)
 				if (payload.event === 'peer.list') {
+					console.log('new peer list get', {payload})
 					payload.list.forEach(({id}) => {
 						peer.current.call(id, stream)
 					})
@@ -81,13 +83,19 @@ const Participant = (props) => {
 		})
 	}, [stream])
 
+
 	function resolvePeerNames() {
-		const resolvedPeers = allPeers.map(peer => {
-			const peerWithName = peerList.find(pp => pp.id === peer.id)
-			// rename peerwithname lol
-			peer.displayName = peerWithName?.displayName ?? peer.id
-			return peer
-		})
+		const resolvedPeers = allPeers
+			.filter(peer => {
+				const exists = peerList.find(pp => pp.id === peer.id)
+				return exists
+			})
+			.map(peer => {
+				const peerWithName = peerList.find(pp => pp.id === peer.id)
+				// rename peerwithname lol
+				peer.displayName = peerWithName?.displayName ?? peer.id
+				return peer
+			})
 		return resolvedPeers
 	}
 
