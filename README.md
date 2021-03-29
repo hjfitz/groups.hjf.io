@@ -13,3 +13,4 @@ To-do:
 - [] Better call negotiation between host and peer
 - [] auto meeting note transcription
 - [] meeting recording
+- [] whiteboard scribble area
