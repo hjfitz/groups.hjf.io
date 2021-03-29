@@ -1,5 +1,7 @@
 ## Group Peer to Peer Chat
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1a6495f3-1ecf-498c-9a7c-c72826b8284c/deploy-status)](https://app.netlify.com/sites/blissful-kirch-6241bc/deploys)
+
 To-do:
 
 - [x] Peer disconnects remove the video from the session
