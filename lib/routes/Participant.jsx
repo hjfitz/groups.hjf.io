@@ -25,9 +25,6 @@ const Participant = (props) => {
 	// call management
 	const [peerConnections, setPeerConnections] = useState([])
 
-	// use this to map names to peers (above)
-	const [peerNameMap, setNameMap] = useState([])
-
 	const [host, setHost] = useState(null)
 
 	////////////
@@ -35,15 +32,20 @@ const Participant = (props) => {
 	////////////
 	useEffect(() => {
 		if (!stream) return
+		
+		// once host connects to us, it will send all connected peers
+		// loop through and call them. on call (useEffect on [host, stream]])
+		// should have other peers call us: add their streams to state and render 
 		peer.current.on('connection', (conn) => {
 			conn.on('data', (data) => {
 				const payload = JSON.parse(data)
 				if (payload.event === 'peer.list') {
-					console.log('new peer list get', {payload})
 					payload.list.forEach(({id}) => {
-						peer.current.call(id, stream)
+						console.log(`calling ${id}`)
+						peer.current.call(id, stream, {
+							metadata: JSON.stringify({displayName: name ?? id.current})
+						})
 					})
-					setNameMap(payload.list)
 				}
 			})
 		})
@@ -56,29 +58,30 @@ const Participant = (props) => {
 		// only handle calls when we can hook in to the cam
 		// and chat with the host
 		if (!stream || !host) return
-		// on mount
+
+		// calls in foreach are handled here
 		peer.current.on('call', (dial) => {
 
+			// moshi moshi peer desu - used only for host
 			dial.answer(stream)
-			// don't call dial.on('stream' and return the call
-			// all peers dial (send video/audio) one another
 
 			dial.on('stream', (peerStream) => {
 				setPeerConnections((activeConnections) => {
+					const {displayName} = JSON.parse(dial.options.metadata)
 					const hasPeer = activeConnections.some(conn => conn.id === dial.peer)
 					if (hasPeer) return activeConnections 
-					return [...activeConnections, {id: dial.peer, stream: peerStream}]
+					return [...activeConnections, {
+						id: dial.peer, 
+						stream: peerStream, 
+						displayName,
+					}]
 				})
 			})
 
 			dial.on('close', () => {
-				// perform cleanup with setPeerConnections and peers 
-				// ideally we could consolidate peers and peerConnections but race conditions prohibit this
-				// thus we maintain two arrays
-				// todo: name these better
-				setPeerConnections((conns) => {
-					return conns.filter((conn) => conn.id !== dial.peer)
-				})
+				// cleanup: remove the peer once it disconnects
+				// todo: if the host leaves, kill the session
+				setPeerConnections((conns) => conns.filter((conn) => conn.id !== dial.peer))
 			})
 		})
 	}, [stream, host])
@@ -91,6 +94,12 @@ const Participant = (props) => {
 		console.log('negotiating session with host', props.id)
 		const conn = peer.current.connect(props.id) 
 
+		// tihs handshake is ok - but could be better
+		// let peers handle calling host:
+		// 1. peer calls a list.request event
+		// 2. host sends list
+		// 3. peer calls list -- this already happens
+		// 4. host answers call
 		conn.on('open', () => {
 			conn.send(JSON.stringify({
 				event: 'name.set',
@@ -103,23 +112,10 @@ const Participant = (props) => {
 	}, [stream])
 
 
-
-	function resolvePeerNames() {
-		const resolvedPeers = peerConnections 
-		// filter as peerNameMap is maintained by our source of truth - host
-			.filter(peer => peerNameMap.find(pp => pp.id === peer.id))
-			.map((peer) => {
-				const namedPeer = peerNameMap.find(pp => pp.id === peer.id)
-				const displayName = namedPeer.displayName ?? peer.id
-				return {...peer, displayName}
-			})
-		return resolvedPeers
-	}
-
 	return (
 		<section className="flex flex-wrap">
 			<PeerParticipant self id={id.current} stream={stream} />
-			{resolvePeerNames().map(peer => (
+			{peerConnections.map(peer => (
 				<PeerParticipant
 					key={peer.id} 
 					{...peer} 

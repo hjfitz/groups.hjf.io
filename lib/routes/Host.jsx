@@ -21,15 +21,15 @@ const Host = () => {
 	useEffect(() => {
 		if (!participants.length) return
 
-		console.log('sending new participant list to peers')
-		console.log({participants})
+		console.log(`sending new participant list to peers: ${participants}`)
 		// when we change participants, let them know about the new list
 		participants.forEach((ptp) => {
 
-			const conn = peer.current.connect(ptp.id)
 			const listToShare = participants
 				.filter(pp => pp.id !== ptp.id)
 				.map(({id, displayName}) => ({id, displayName}))
+
+			const conn = peer.current.connect(ptp.id)
 
 			conn.on('open', () => {
 				conn.send(JSON.stringify({
@@ -55,14 +55,18 @@ const Host = () => {
 		peer.current.on('connection', (conn) => {
 			
 
+			// todo: remove this and set it from peerStream in onStream
 			let peerName = conn.peer
 			conn.on('data', data => {
 				const payload = JSON.parse(data)
 				if (payload.event === 'name.set') {
 					peerName = payload.name
-					const dial = peer.current.call(conn.peer, stream)
+					const dial = peer.current.call(conn.peer, stream, {
+						metadata: JSON.stringify({displayName: name ?? id.current})
+					})
 					console.log(`calling ${conn.peer}`)
 					dial.on('stream', (peerStream) => {
+						console.log({peerStream, dial})
 						setParticipants((cur) => {
 							const newPeer = {
 								id: conn.peer, 
