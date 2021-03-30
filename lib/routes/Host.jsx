@@ -5,6 +5,8 @@ import {randID, useStream} from '../util'
 import {PeerParticipant} from '../components'
 import {AppContext} from '../main'
 
+import {UserBar} from '../components/PeerParticipant'
+
 const {useRef, useState, useEffect, useContext} = React
 
 const Host = () => {
@@ -21,7 +23,7 @@ const Host = () => {
 	useEffect(() => {
 		if (!participants.length) return
 
-		console.log(`sending new participant list to peers: ${participants}`)
+		console.log(`sending new participant list to peers: ${JSON.stringify(participants)}`)
 		// when we change participants, let them know about the new list
 		participants.forEach((ptp) => {
 
@@ -50,16 +52,20 @@ const Host = () => {
 
 	useEffect(() => {
 		if (!stream) return
+		// on request join, update peer list
+		// that update should send list to peer
+		// peer should call us
+		// on call, update state with stream... which would not re call peers as ids are mapped in state
+
 
 		// on webcam availability, we can now listen for connections
 		peer.current.on('connection', (conn) => {
-			
 
 			// todo: remove this and set it from peerStream in onStream
 			let peerName = conn.peer
 			conn.on('data', data => {
 				const payload = JSON.parse(data)
-				if (payload.event === 'name.set') {
+				if (payload.event === 'request.join') {
 					peerName = payload.name
 					const dial = peer.current.call(conn.peer, stream, {
 						metadata: JSON.stringify({displayName: name ?? id.current})
@@ -96,17 +102,20 @@ const Host = () => {
 	}, [stream])
 
 	return (
-		<section className="flex flex-wrap">
-			{/* self */}
-			<PeerParticipant self id={id.current} stream={stream} />
+		<>
+			<section className="video-container">
+				{/* self */}
+				<PeerParticipant self id={id.current} stream={stream} />
 
-			{participants.map(participant => (
-				<PeerParticipant
-					key={participant.id} 
-					{...participant} 
-				/>
-			))}
-		</section>
+				{participants.map(participant => (
+					<PeerParticipant
+						key={participant.id} 
+						{...participant} 
+					/>
+				))}
+			</section>
+			<UserBar stream={stream} />
+		</>
 	)
 }
 

@@ -12,11 +12,33 @@ const {
 	useContext,
 } = React
 
+class PeerWrapper {
+	constructor(peer) {
+		console.log(peer)
+		this.peer = peer
+	}
+
+	send(id, message) {
+		return new Promise((res) => {
+			const conn = this.peer.connect(id)
+			conn.on('open', () => {
+				let encodedMessage = message
+				if (typeof encodedMessage === 'object') {
+					encodedMessage = JSON.stringify(encodedMessage)
+				}
+				conn.send(encodedMessage)
+				res()
+			})
+		})
+	}
+}
+
 const Participant = (props) => {
 	// peer bits
 	const idInit = randID()
 	const id = useRef(idInit)
 	const peer = useRef(new Peer(idInit))
+	const peerWrap = useRef(new PeerWrapper(peer.current))
 
 	// custom hooks and bits
 	const {name} = useContext(AppContext)
@@ -43,7 +65,10 @@ const Participant = (props) => {
 					payload.list.forEach(({id}) => {
 						console.log(`calling ${id}`)
 						peer.current.call(id, stream, {
-							metadata: JSON.stringify({displayName: name ?? id.current})
+							metadata: JSON.stringify({
+								displayName: name ?? id.current,
+								event: 'peer.call',
+							})
 						})
 					})
 				}
@@ -62,7 +87,7 @@ const Participant = (props) => {
 		// calls in foreach are handled here
 		peer.current.on('call', (dial) => {
 
-			// moshi moshi peer desu - used only for host
+			// moshi moshi peer desu
 			dial.answer(stream)
 
 			dial.on('stream', (peerStream) => {
@@ -102,7 +127,7 @@ const Participant = (props) => {
 		// 4. host answers call
 		conn.on('open', () => {
 			conn.send(JSON.stringify({
-				event: 'name.set',
+				event: 'request.join',
 				name: name ?? id.current,
 			}))
 		})
@@ -113,7 +138,7 @@ const Participant = (props) => {
 
 
 	return (
-		<section className="flex flex-wrap">
+		<section className="video-container">
 			<PeerParticipant self id={id.current} stream={stream} />
 			{peerConnections.map(peer => (
 				<PeerParticipant

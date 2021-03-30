@@ -6,7 +6,7 @@ import {AppContext} from '../main'
 const {useRef, useEffect, useState, useContext} = React
 
 // todo: potentially split stream in to a context and move this to the root?
-const UserBar = ({stream}) => {
+export const UserBar = ({stream}) => {
 	const [muted, setMute] = useState(false)
 	function toggleMute() {
 		setMute((current) => {
@@ -40,7 +40,7 @@ const ParticipantPlayer = ({id, displayName, stream, self}) => {
 
 	return (
 		<>
-			<div className="relative m-4">
+			<div className="relative m-4 participant">
 				<p 
 					onClick={copy(id)} 
 					className="absolute bottom-0 left-0 z-10 px-3 py-1 bg-black cursor-default transition duration-300 hover:opacity-100 opacity-80"
@@ -49,7 +49,7 @@ const ParticipantPlayer = ({id, displayName, stream, self}) => {
 				</p>
 				<video className={vidClass} ref={player} />
 			</div>
-			{self && <UserBar stream={stream} />}
+			{/*self && <UserBar stream={stream} />*/}
 		</>
 	)
 }

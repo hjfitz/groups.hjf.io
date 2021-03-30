@@ -7,9 +7,21 @@ html, body, #main {
 }
 
 .btn {
-	@apply w-24 rounded bg-indigo-700 m-2 cursor-pointer px-4 py-2 hover:bg-indigo-500 transition;
+	@apply w-24 px-4 py-2 m-2 bg-indigo-700 rounded cursor-pointer hover:bg-indigo-500 transition;
 }
 
 .self {
 	transform: scaleX(-1);
+}
+
+.video-container {
+	@apply flex flex-row;
+	flex-flow: row wrap;
+	align-items: stretch;
+	justify-content: space-around;
+}
+
+.participant {
+	flex-basis: 30%;
+	flex-grow: 1;
 }
