@@ -1,7 +1,7 @@
 import React from 'react'
 import {Link} from '@reach/router'
 
-import {AppContext} from '../main'
+import {AppContext} from '../util/contexts'
 
 const {useContext} = React
 

@@ -1,9 +1,8 @@
 import React from 'react'
 import {render} from 'react-dom'
 import {Router} from '@reach/router'
-import Peer from 'peer'
 
-const {useState, useEffect, useRef} = React
+const {useState} = React
 
 import {
 	Home,
@@ -11,39 +10,10 @@ import {
 	Connector,
 	Participant,
 } from './routes'
-import {randID} from './util'
 
-export const AppContext = React.createContext({
-	name: null,
-	setName: () => {},
-})
-
-export const StreamContext = React.createContext({
-	stream: null
-})
-
-export const PeerContext = React.createContext({
-	peer: null,
-	id: null,
-})
-
-function useStream() {
-	const [stream, setStream] = useState(null)
-	useEffect(() => {
-		navigator.mediaDevices
-			.getUserMedia({video: true, audio: true})
-			.then(setStream)
-	}, [])
-	return stream
-}
-
-// todo: extract in to hook and put in host and peer
-function usePeer() {
-	const idInit = randID()
-	const id = useRef(idInit)
-	const peer = useRef(new Peer(idInit))
-	return {peer, id}
-}
+import {AppContext, StreamContext, PeerContext} from './util/contexts'
+// todo: handle this better
+import {useStream, usePeer} from './util/hooks'
 
 const App = () => {
 	const [name, setName] = useState(null)

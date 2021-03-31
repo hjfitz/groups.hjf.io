@@ -1,7 +1,7 @@
 import React from 'react'
 
 import {copy} from '../util'
-import {AppContext} from '../main'
+import {AppContext} from '../util/contexts'
 
 const {useRef, useEffect, useState, useContext} = React
 

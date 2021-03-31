@@ -1,46 +1,17 @@
 import React from 'react'
-import Peer from 'peerjs'
 
 import {PeerParticipant} from '../components'
-import {useStream, randID} from '../util'
-import {AppContext} from '../main'
+import {useStream, usePeer} from '../util'
+import {AppContext} from '../util/contexts'
 
 const {
-	useRef,
 	useState, 
 	useEffect, 
 	useContext,
 } = React
 
-class PeerWrapper {
-	constructor(peer) {
-		console.log(peer)
-		this.peer = peer
-	}
-
-	send(id, message) {
-		return new Promise((res) => {
-			const conn = this.peer.connect(id)
-			conn.on('open', () => {
-				let encodedMessage = message
-				if (typeof encodedMessage === 'object') {
-					encodedMessage = JSON.stringify(encodedMessage)
-				}
-				conn.send(encodedMessage)
-				res()
-			})
-		})
-	}
-}
-
 const Participant = (props) => {
-	// peer bits
-	const idInit = randID()
-	const id = useRef(idInit)
-	const peer = useRef(new Peer(idInit))
-	const peerWrap = useRef(new PeerWrapper(peer.current))
-
-	// custom hooks and bits
+	const {peer, id} = usePeer()
 	const {name} = useContext(AppContext)
 	const stream = useStream()
 

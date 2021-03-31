@@ -1,19 +1,16 @@
 import React from 'react'
-import Peer from 'peerjs'
 
-import {randID, useStream} from '../util'
+import {useStream, usePeer} from '../util'
 import {PeerParticipant} from '../components'
-import {AppContext} from '../main'
+import {AppContext} from '../util/contexts'
 
 import {UserBar} from '../components/PeerParticipant'
 
-const {useRef, useState, useEffect, useContext} = React
+const {useState, useEffect, useContext} = React
 
 const Host = () => {
 	const {name} = useContext(AppContext)
-	const idInit = randID()
-	const id = useRef(idInit)
-	const peer = useRef(new Peer(idInit))
+	const {peer, id} = usePeer()
 	const stream = useStream()
 
 	// participant list has interface:
