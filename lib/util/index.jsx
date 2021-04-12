@@ -22,6 +22,28 @@ export function usePeer() {
 	return peerDetails
 }
 
+export function useDeveloperMode(setList) {
+	const stream = useStream()
+	useEffect(() => {
+		if (!stream) return
+		const url = new URLSearchParams(window.location.search)
+		const vidNum = url.get('v')
+		if (!vidNum) return
+		// both states (host and reg) follow the same interface
+		// id, stream, displayName
+		setList((cur) => {
+			const fakeStreams = Array.from({length: vidNum}, () => {
+				return {
+					id: '__DeveloperInitiated_NODIAL',
+					displayName: '__DeveloperPeer',
+					stream,
+				}
+			})
+			return [...cur, ...fakeStreams]
+		})
+	}, [stream])
+}
+
 // shove an element on the page, copy the contents and remove
 // because the event loop is clever, we don't see the element 
 // rendered

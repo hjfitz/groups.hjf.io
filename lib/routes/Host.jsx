@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {useStream, usePeer} from '../util'
+import {useDeveloperMode, useStream, usePeer} from '../util'
 import {PeerParticipant} from '../components'
 import {AppContext} from '../util/contexts'
 
@@ -13,9 +13,12 @@ const Host = () => {
 	const {peer, id} = usePeer()
 	const stream = useStream()
 
+
 	// participant list has interface:
 	// id, stream, displayName (defaults to id)
 	const [participants, setParticipants] = useState([])
+
+	useDeveloperMode(setParticipants)
 
 	useEffect(() => {
 		if (!participants.length) return

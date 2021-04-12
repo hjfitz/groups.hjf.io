@@ -11,6 +11,8 @@ import {
 	Participant,
 } from './routes'
 
+import {UserBar} from './components/PeerParticipant'
+
 import {AppContext, StreamContext, PeerContext} from './util/contexts'
 // todo: handle this better
 import {useStream, usePeer} from './util/hooks'
@@ -33,6 +35,8 @@ const App = () => {
 					</PeerContext.Provider>
 				</StreamContext.Provider>
 			</AppContext.Provider>
+
+			<UserBar stream={stream} />
 		</div>
 	)
 }

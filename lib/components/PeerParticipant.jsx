@@ -15,11 +15,13 @@ export const UserBar = ({stream}) => {
 		})
 	}
 	return (
-		<section className="fixed bottom-0 z-20 w-full bg-black ">
-			<div className="flex px-4 py-4">
-				<div onClick={toggleMute} className="cursor-pointer">Muted: {muted.toString()}</div>
-			</div>
-		</section>
+		<div>
+			<section className="fixed bottom-0 z-20 w-full bg-black ">
+				<div className="flex px-4 py-4">
+					<div onClick={toggleMute} className="cursor-pointer">Muted: {muted.toString()}</div>
+				</div>
+			</section>
+		</div>
 	)
 }
 
