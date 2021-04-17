@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@reach/router": "^1.3.4",
+    "lodash": "^4.17.21",
     "peerjs": "^1.3.1"
   }
 }

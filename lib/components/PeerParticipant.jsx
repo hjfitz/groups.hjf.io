@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {copy} from '../util'
+import {copy, usePeer} from '../util'
 import {AppContext} from '../util/contexts'
 
 const {useRef, useEffect, useState, useContext} = React
@@ -8,6 +8,7 @@ const {useRef, useEffect, useState, useContext} = React
 // todo: potentially split stream in to a context and move this to the root?
 export const UserBar = ({stream}) => {
 	const [muted, setMute] = useState(false)
+	const {peer} = usePeer()
 	function toggleMute() {
 		setMute((current) => {
 			stream.getAudioTracks().forEach(track => track.enabled = current)
@@ -25,8 +26,10 @@ export const UserBar = ({stream}) => {
 	)
 }
 
-const ParticipantPlayer = ({id, displayName, stream, self}) => {
+const ParticipantPlayer = ({id, displayName, stream}) => {
 	const {name} = useContext(AppContext)
+	const {id: selfID} = usePeer()
+	const self = id === selfID
 	if (!displayName && !name) {
 		displayName = id
 	}
@@ -41,18 +44,17 @@ const ParticipantPlayer = ({id, displayName, stream, self}) => {
 
 
 	return (
-		<>
-			<div className="relative m-4 participant">
+		<div>
+			<div className="relative flex-col-reverse flex-auto h-full m-4 participant justify-items-center">
 				<p 
 					onClick={copy(id)} 
 					className="absolute bottom-0 left-0 z-10 px-3 py-1 bg-black cursor-default transition duration-300 hover:opacity-100 opacity-80"
 				>
 					{(self && name) ? name : displayName}
 				</p>
-				<video className={vidClass} ref={player} />
+				<video className={vidClass + ' h-full'} ref={player} />
 			</div>
-			{/*self && <UserBar stream={stream} />*/}
-		</>
+		</div>
 	)
 }
 

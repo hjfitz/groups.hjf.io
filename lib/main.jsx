@@ -22,20 +22,21 @@ const App = () => {
 	const stream = useStream()
 	const peerDetails = usePeer()
 	return (
-		<div className="min-h-full text-white bg-gray-900">
-			<AppContext.Provider value={{name, setName}}>
-				<StreamContext.Provider value={{stream}}>
-					<PeerContext.Provider value={peerDetails}>
-						<Router className="h-full">
-							<Home path="/" />
-							<Host path="/host" />
-							<Connector path="/join" />
-							<Participant path="/room/:id" />
-						</Router>
-					</PeerContext.Provider>
-				</StreamContext.Provider>
-			</AppContext.Provider>
-
+		<div className="h-full text-white bg-gray-900">
+			<div className="h-full">
+				<AppContext.Provider value={{name, setName}}>
+					<StreamContext.Provider value={{stream}}>
+						<PeerContext.Provider value={peerDetails}>
+							<Router className="">
+								<Home path="/" />
+								<Host path="/host" />
+								<Connector path="/join" />
+								<Participant path="/room/:id" />
+							</Router>
+						</PeerContext.Provider>
+					</StreamContext.Provider>
+				</AppContext.Provider>
+			</div>
 			<UserBar stream={stream} />
 		</div>
 	)

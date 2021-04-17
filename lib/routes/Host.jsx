@@ -1,4 +1,5 @@
 import React from 'react'
+import chunk from 'lodash/chunk'
 
 import {useDeveloperMode, useStream, usePeer} from '../util'
 import {PeerParticipant} from '../components'
@@ -7,6 +8,18 @@ import {AppContext} from '../util/contexts'
 import {UserBar} from '../components/PeerParticipant'
 
 const {useState, useEffect, useContext} = React
+
+const ParticipantWrapper = ({participants}) => {
+	const PER_ROW = 3
+	const rows = chunk(participants, PER_ROW)
+	console.log(rows)
+	return rows.map((row, idx) => (
+		<div className="flex flex-shrink my-4" key={idx}>
+			{row.map(pp => <PeerParticipant key={pp.id} {...pp} />)}
+		</div>
+	))
+
+}
 
 const Host = () => {
 	const {name} = useContext(AppContext)
@@ -105,7 +118,10 @@ const Host = () => {
 		<>
 			<section className="video-container">
 				{/* self */}
-				<PeerParticipant self id={id.current} stream={stream} />
+				<ParticipantWrapper participants={[{id: id.current, stream}, ...participants]} />
+
+				{/*
+				<PeerParticipant id={id.current} stream={stream} />
 
 				{participants.map(participant => (
 					<PeerParticipant
@@ -113,8 +129,8 @@ const Host = () => {
 						{...participant} 
 					/>
 				))}
+				*/}
 			</section>
-			<UserBar stream={stream} />
 		</>
 	)
 }

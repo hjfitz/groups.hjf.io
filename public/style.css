@@ -2,8 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+	min-height: 0;
+	min-width: 0;
+}
+
 html, body, #main {
 	height: 100%;
+	max-height: 100vh;
 }
 
 .btn {
@@ -14,14 +20,35 @@ html, body, #main {
 	transform: scaleX(-1);
 }
 
-.video-container {
-	@apply flex flex-row;
-	flex-flow: row wrap;
-	align-items: stretch;
-	justify-content: space-around;
+:root {
+	--navbar-height: 60px;
 }
 
-.participant {
+.nav {
+	height: var(--navbar-height);
+}
+
+.video-container {
+	display: flex;
+	height: 100vh;
+	flex-direction: column;
+}
+
+.test {
+	flex: 1 1 auto;
+}
+
+.viiideo-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+	justify-content: center;
+}
+
+.pariiiiticipant {
 	flex-basis: 30%;
-	flex-grow: 1;
+	flex-shrink: 1;
+}
+
+.test {
+	/*background-color: #f0f; */
 }
