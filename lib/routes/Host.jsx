@@ -9,6 +9,9 @@ import {UserBar} from '../components/PeerParticipant'
 
 const {useState, useEffect, useContext} = React
 
+
+// possible fix for items on screen
+// todo: look to vary PER_ROW based on number of participants
 const ParticipantWrapper = ({participants}) => {
 	const PER_ROW = 3
 	const rows = chunk(participants, PER_ROW)
@@ -18,7 +21,19 @@ const ParticipantWrapper = ({participants}) => {
 			{row.map(pp => <PeerParticipant key={pp.id} {...pp} />)}
 		</div>
 	))
+}
 
+function getCols(pps) {
+	if (pps < 3) return 2
+	if (pps < 6) return 3
+	if (pps < 10) return 4
+	if (pps < 13) return 5
+	return 6
+	// 1 - 2, 1
+	// 2 - 5, 2
+	// 6 - 9, 3
+	// 9 - 12, 4
+	// 12+, 5
 }
 
 const Host = () => {
@@ -114,13 +129,12 @@ const Host = () => {
 		
 	}, [stream])
 
+	const cols = getCols(participants.length + 1)
+	const className = `video-container grid-cols-${cols}`
+
 	return (
 		<>
-			<section className="video-container">
-				{/* self */}
-				<ParticipantWrapper participants={[{id: id.current, stream}, ...participants]} />
-
-				{/*
+			<section className={className}>
 				<PeerParticipant id={id.current} stream={stream} />
 
 				{participants.map(participant => (
@@ -129,10 +143,18 @@ const Host = () => {
 						{...participant} 
 					/>
 				))}
-				*/}
 			</section>
 		</>
 	)
 }
 
 export default Host
+
+/*
+<ParticipantWrapper 
+	participants={[
+		{id: id.current, stream}, 
+		...participants
+	]}
+/>
+*/

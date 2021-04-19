@@ -29,9 +29,9 @@ html, body, #main {
 }
 
 .video-container {
-	display: flex;
-	height: 100vh;
-	flex-direction: column;
+	height: calc(100vh - 60px);
+	display: grid;
+	grid-auto-rows: minmax(100px, auto);
 }
 
 .test {
