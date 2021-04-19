@@ -1,27 +1,10 @@
 import React from 'react'
-import chunk from 'lodash/chunk'
 
 import {useDeveloperMode, useStream, usePeer} from '../util'
 import {PeerParticipant} from '../components'
 import {AppContext} from '../util/contexts'
 
-import {UserBar} from '../components/PeerParticipant'
-
 const {useState, useEffect, useContext} = React
-
-
-// possible fix for items on screen
-// todo: look to vary PER_ROW based on number of participants
-const ParticipantWrapper = ({participants}) => {
-	const PER_ROW = 3
-	const rows = chunk(participants, PER_ROW)
-	console.log(rows)
-	return rows.map((row, idx) => (
-		<div className="flex flex-shrink my-4" key={idx}>
-			{row.map(pp => <PeerParticipant key={pp.id} {...pp} />)}
-		</div>
-	))
-}
 
 function getCols(pps) {
 	if (pps < 3) return 2
@@ -29,11 +12,6 @@ function getCols(pps) {
 	if (pps < 10) return 4
 	if (pps < 13) return 5
 	return 6
-	// 1 - 2, 1
-	// 2 - 5, 2
-	// 6 - 9, 3
-	// 9 - 12, 4
-	// 12+, 5
 }
 
 const Host = () => {
@@ -149,12 +127,3 @@ const Host = () => {
 }
 
 export default Host
-
-/*
-<ParticipantWrapper 
-	participants={[
-		{id: id.current, stream}, 
-		...participants
-	]}
-/>
-*/
