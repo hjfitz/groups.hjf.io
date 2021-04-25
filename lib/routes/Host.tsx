@@ -3,7 +3,7 @@ import React, {FC} from 'react'
 import {PeerParticipant} from '@/components'
 import {useDeveloperMode, useStream, usePeer} from '@/util'
 import {AppContext} from '@/util/contexts'
-import {RoutedComponent, Participant} from '@/routes/types'
+import {RoutedComponent, HostedPeer, SentPeerList} from '@/routes/types'
 
 const {useState, useEffect, useContext} = React
 
@@ -16,7 +16,6 @@ function getCols(pps: number) {
 }
 
 
-
 const Host: FC<RoutedComponent> = () => {
 	const {name} = useContext(AppContext)
 	const {peer, id} = usePeer() 
@@ -25,7 +24,7 @@ const Host: FC<RoutedComponent> = () => {
 
 	// participant list has interface:
 	// id, stream, displayName (defaults to id)
-	const [participants, setParticipants] = useState<Participant[]>([])
+	const [participants, setParticipants] = useState<HostedPeer[]>([])
 
 	useDeveloperMode(setParticipants)
 
@@ -44,7 +43,8 @@ const Host: FC<RoutedComponent> = () => {
 			const conn = peer.current.connect(ptp.id)
 
 			conn.on('open', () => {
-				conn.send(JSON.stringify({
+
+				const sentList: SentPeerList = {
 					event: 'peer.list', 
 					list: [
 						...listToShare, 
@@ -54,8 +54,9 @@ const Host: FC<RoutedComponent> = () => {
 							displayName: name ?? id.current
 						}
 					],
-				}))
-				//conn.close()
+				}
+
+				conn.send(JSON.stringify(sentList))
 			})
 		})
 	}, [participants])

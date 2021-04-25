@@ -1,9 +1,10 @@
 import React, {FC} from 'react'
 
-import {RoutedComponent, Participant} from '@/routes/types'
+import {PatchedMediaStream, ConnectedPeer, ParticipantProps, HostPayload, SentPeerList} from '@/routes/types'
 import {PeerParticipant} from '@/components'
 import {useStream, usePeer} from '@/util'
 import {AppContext} from '@/util/contexts'
+import {DataConnection, MediaConnection} from 'peerjs'
 
 const {
 	useState, 
@@ -11,9 +12,6 @@ const {
 	useContext,
 } = React
 
-interface ParticipantProps extends RoutedComponent {
-	id?: string
-}
 
 const Participant: FC<ParticipantProps> = (props) => {
 	const {peer, id} = usePeer()
@@ -21,9 +19,9 @@ const Participant: FC<ParticipantProps> = (props) => {
 	const stream = useStream()
 
 	// call management
-	const [peerConnections, setPeerConnections] = useState<Participant[]>([])
+	const [peerConnections, setPeerConnections] = useState<ConnectedPeer[]>([])
 
-	const [host, setHost] = useState(null)
+	const [host, setHost] = useState<DataConnection>()
 
 	////////////
 	// CONNECT TO THOSE PEERS
@@ -36,11 +34,12 @@ const Participant: FC<ParticipantProps> = (props) => {
 		// should have other peers call us: add their streams to state and render 
 		peer.current.on('connection', (conn) => {
 			conn.on('data', (data) => {
-				const payload = JSON.parse(data)
+				const payload = JSON.parse(data) as HostPayload
 				if (payload.event === 'peer.list') {
-					payload.list.forEach(({id}) => {
+					const peerListPayload = payload as SentPeerList
+					peerListPayload.list.forEach(({id: peerID}) => {
 						console.log(`calling ${id}`)
-						peer.current.call(id, stream, {
+						peer.current.call(peerID, stream, {
 							metadata: JSON.stringify({
 								displayName: name ?? id.current,
 								event: 'peer.call',
@@ -68,7 +67,7 @@ const Participant: FC<ParticipantProps> = (props) => {
 
 			dial.on('stream', (peerStream) => {
 				setPeerConnections((activeConnections) => {
-					const {displayName} = JSON.parse(dial.options.metadata)
+					const {displayName} = JSON.parse((dial as PatchedMediaStream).options.metadata)
 					const hasPeer = activeConnections.some(conn => conn.id === dial.peer)
 					if (hasPeer) return activeConnections 
 					return [...activeConnections, {
@@ -91,7 +90,7 @@ const Participant: FC<ParticipantProps> = (props) => {
 	// HOST CONNECTION
 	////////////
 	useEffect(() => {
-		if (!stream) return
+		if (!stream || !props.id) return
 		console.log('negotiating session with host', props.id)
 		const conn = peer.current.connect(props.id) 
 
@@ -117,7 +116,7 @@ const Participant: FC<ParticipantProps> = (props) => {
 
 	return (
 		<section className="video-container">
-			<PeerParticipant self id={id.current} stream={stream} />
+			<PeerParticipant id={id.current} stream={stream} />
 			{peerConnections.map(peer => (
 				<PeerParticipant
 					key={peer.id} 
