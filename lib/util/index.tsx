@@ -2,8 +2,8 @@ import React from 'react'
 
 import {
 	StreamContext,
-	PeerContext, 
-	StreamCtx, 
+	PeerContext,
+	StreamCtx,
 	PeerCtx,
 } from '@/util/contexts'
 
@@ -15,7 +15,7 @@ interface StringifyProps {
 	json: object
 }
 
-export const Stringify: React.FC<StringifyProps> = ({json}) => (
+export const Stringify: React.FC<StringifyProps> = ({json}: StringifyProps) => (
 	<code>
 		<pre>{JSON.stringify(json, null, 2)}</pre>
 	</code>
@@ -38,29 +38,27 @@ export function useDeveloperMode(setList: Function) {
 		const url = new URLSearchParams(window.location.search)
 		const vidNumRaw = url.get('v')
 		const vidNum = parseInt(vidNumRaw ?? '4', 10)
-		
+
 		if (!vidNumRaw || !Number.isInteger(vidNum)) return
 		// both states (host and reg) follow the same interface
 		// id, stream, displayName
 		// todo - type states better
 		setList((cur: Array<any>) => {
-			const fakeStreams = Array.from({length: vidNum}, () => {
-				return {
-					id: '__DeveloperInitiated_NODIAL',
-					displayName: '__DeveloperPeer',
-					stream,
-				}
-			})
+			const fakeStreams = Array.from({length: vidNum}, () => ({
+				id: '__DeveloperInitiated_NODIAL',
+				displayName: '__DeveloperPeer',
+				stream,
+			}))
 			return [...cur, ...fakeStreams]
 		})
 	}, [stream])
 }
 
 // shove an element on the page, copy the contents and remove
-// because the event loop is clever, we don't see the element 
+// because the event loop is clever, we don't see the element
 // rendered
 export function copy(id: string) {
-	return function() {
+	return () => {
 		const rng = document.createRange()
 		const el = document.createElement('div')
 		el.textContent = id

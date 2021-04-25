@@ -17,7 +17,7 @@ interface ListProps {
 	participants: ConnectedPeer[]
 }
 
-const ParticipantsList: FC<ListProps> = ({participants}) => {
+const ParticipantsList: FC<ListProps> = ({participants}: ListProps) => {
 	const {id} = usePeer()
 	const stream = useStream()
 	const cols = getCols(participants.length + 1)
@@ -30,8 +30,8 @@ const ParticipantsList: FC<ListProps> = ({participants}) => {
 
 				{participants.map((participant) => (
 					<ParticipantPlayer
-						key={participant.id} 
-						{...participant} 
+						key={participant.id}
+						{...participant}
 					/>
 				))}
 			</section>

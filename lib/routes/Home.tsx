@@ -5,9 +5,11 @@ import {AppContext, AppCtx} from '@/util/contexts'
 
 const {useContext} = React
 
+type ChangeName = (ev: KeyboardEvent<HTMLInputElement>) => void
+
 const Home: React.FC<RouteComponentProps> = () => {
-	const {setName} = useContext(AppContext) as AppCtx 
-	const changeName = (ev: KeyboardEvent<HTMLInputElement>) => setName((ev.target as HTMLInputElement).value)
+	const {setName} = useContext(AppContext) as AppCtx
+	const changeName: ChangeName = (ev) => setName((ev.target as HTMLInputElement).value)
 	return (
 		<main className="flex flex-col items-center justify-center h-screen">
 			<h1 className="text-3xl">Are you hosting or joining?</h1>
@@ -16,10 +18,10 @@ const Home: React.FC<RouteComponentProps> = () => {
 				<Link className="btn" to="/join">Joining</Link>
 			</div>
 			<div className="flex w-64">
-				<input 
+				<input
 					className="queryin"
 					placeholder="Enter your name here"
-					onKeyUp={changeName} 
+					onKeyUp={changeName}
 				/>
 			</div>
 		</main>

@@ -5,21 +5,20 @@ import ParticipantsList from '@/components/ParticipantsList'
 import {useStream, usePeer} from '@/util'
 import {AppContext} from '@/util/contexts'
 import {
-	HostPayload, 
+	HostPayload,
 	SentPeerList,
-	ConnectedPeer, 
-	ParticipantProps, 
-	PatchedMediaStream, 
+	ConnectedPeer,
+	ParticipantProps,
+	PatchedMediaStream,
 } from '@/routes/types'
-	
+
 const {
-	useState, 
-	useEffect, 
+	useState,
+	useEffect,
 	useContext,
 } = React
 
-
-const Participant: FC<ParticipantProps> = (props) => {
+const Participant: FC<ParticipantProps> = (props: ParticipantProps) => {
 	const {peer, id} = usePeer()
 	const {name} = useContext(AppContext)
 	const stream = useStream()
@@ -29,15 +28,15 @@ const Participant: FC<ParticipantProps> = (props) => {
 
 	const [host, setHost] = useState<DataConnection>()
 
-	////////////
+	/// /////////
 	// CONNECT TO THOSE PEERS
-	////////////
+	/// /////////
 	useEffect(() => {
 		if (!stream) return
-		
+
 		// once host connects to us, it will send all connected peers
 		// loop through and call them. on call (useEffect on [host, stream]])
-		// should have other peers call us: add their streams to state and render 
+		// should have other peers call us: add their streams to state and render
 		peer.current.on('connection', (conn) => {
 			conn.on('data', (data) => {
 				const payload = JSON.parse(data) as HostPayload
@@ -49,7 +48,7 @@ const Participant: FC<ParticipantProps> = (props) => {
 							metadata: JSON.stringify({
 								displayName: name ?? id.current,
 								event: 'peer.call',
-							})
+							}),
 						})
 					})
 				}
@@ -57,9 +56,9 @@ const Participant: FC<ParticipantProps> = (props) => {
 		})
 	}, [stream])
 
-	////////////
+	/// /////////
 	// PEER CONNECTS TO US
-	////////////
+	/// /////////
 	useEffect(() => {
 		// only handle calls when we can hook in to the cam
 		// and chat with the host
@@ -67,18 +66,17 @@ const Participant: FC<ParticipantProps> = (props) => {
 
 		// calls in foreach are handled here
 		peer.current.on('call', (dial) => {
-
 			// moshi moshi peer desu
 			dial.answer(stream)
 
 			dial.on('stream', (peerStream) => {
 				setPeerConnections((activeConnections) => {
 					const {displayName} = JSON.parse((dial as PatchedMediaStream).options.metadata)
-					const hasPeer = activeConnections.some(conn => conn.id === dial.peer)
-					if (hasPeer) return activeConnections 
+					const hasPeer = activeConnections.some((conn) => conn.id === dial.peer)
+					if (hasPeer) return activeConnections
 					return [...activeConnections, {
-						id: dial.peer, 
-						stream: peerStream, 
+						id: dial.peer,
+						stream: peerStream,
 						displayName,
 					}]
 				})
@@ -92,13 +90,13 @@ const Participant: FC<ParticipantProps> = (props) => {
 		})
 	}, [stream, host])
 
-	////////////
+	/// /////////
 	// HOST CONNECTION
-	////////////
+	/// /////////
 	useEffect(() => {
 		if (!stream || !props.id) return
 		console.log('negotiating session with host', props.id)
-		const conn = peer.current.connect(props.id) 
+		const conn = peer.current.connect(props.id)
 
 		// tihs handshake is ok - but could be better
 		// let peers handle calling host:

@@ -2,9 +2,6 @@ import React from 'react'
 import {render} from 'react-dom'
 import {LocationProvider, Router} from '@reach/router'
 
-// awful react hack for snowpack
-const {useState} = React
-
 import {
 	Home,
 	Host,
@@ -12,10 +9,12 @@ import {
 	Participant,
 } from '@/routes'
 
-
 import {AppContext, StreamContext, PeerContext} from '@/util/contexts'
 import {useStream, usePeer} from '@/util/hooks'
 import {UserBar} from '@/components'
+
+// awful react hack for snowpack
+const {useState} = React
 
 const App = () => {
 	const [name, setName] = useState<string>('')

@@ -30,4 +30,3 @@ export function usePeer(): PeerDetails {
 	const peer = useRef(new Peer(idInit))
 	return {peer, id}
 }
-

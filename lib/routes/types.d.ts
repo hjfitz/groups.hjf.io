@@ -1,6 +1,5 @@
-import {RouteComponentProps} from '@reach/router';
+import {RouteComponentProps} from '@reach/router'
 import {MediaConnection} from 'peerjs'
-
 
 export interface SentPeerList extends HostPayload {
 	list: PeerDetails[]
@@ -26,7 +25,7 @@ interface PeerDetails {
 
 // todo: consolidate
 export interface ConnectedPeer extends PeerDetails {
-	stream: MediaStream 
+	stream: MediaStream
 }
 
 export interface PatchedMediaStream extends MediaConnection {

@@ -11,12 +11,13 @@ interface PlayerProps {
 	stream: MediaStream
 }
 
-const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}) => {
+const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}: PlayerProps) => {
+	let dispName = displayName
 	const {name} = useContext(AppContext) as AppCtx
 	const {id: selfID} = usePeer() as PeerCtx
 	const self = id === selfID.current
 	if (!displayName && !name) {
-		displayName = id
+		dispName = id
 	}
 	const player = useRef<HTMLVideoElement>(null)
 	const nameTag = useRef<HTMLParagraphElement>(null)
@@ -34,21 +35,24 @@ const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}) => 
 		})
 	}, [stream])
 
-
 	return (
-			<div className="flex items-center justify-center h-full p-4 participant">
-				<div>
-					<video disablePictureInPicture controlsList="nodownload" className={vidClass + ' mx-auto'} ref={player} />
-					<p 
-						ref={nameTag}
-						onClick={copy(id)} 
-						className="z-10 px-3 py-1 mx-auto bg-black cursor-default transition duration-300 hover:opacity-100 opacity-80"
-					>
-						{(self && name) ? name : displayName}
-					</p>
-				</div>
+		<div className="flex items-center justify-center h-full p-4 participant">
+			<div>
+				<video disablePictureInPicture controlsList="nodownload" className={`${vidClass} mx-auto`} ref={player} />
+				<p
+					ref={nameTag}
+					onClick={copy(id)}
+					className="z-10 px-3 py-1 mx-auto bg-black cursor-default transition duration-300 hover:opacity-100 opacity-80"
+				>
+					{(self && name) ? name : dispName}
+				</p>
 			</div>
+		</div>
 	)
+}
+
+ParticipantPlayer.defaultProps = {
+	displayName: undefined,
 }
 
 export default ParticipantPlayer
