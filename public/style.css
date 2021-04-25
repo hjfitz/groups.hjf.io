@@ -24,31 +24,13 @@ html, body, #main {
 	--navbar-height: 60px;
 }
 
-.nav {
+.userbar {
 	height: var(--navbar-height);
 }
 
 .video-container {
-	height: calc(100vh - 60px);
+	height: calc(100vh - var(--navbar-height));
 	display: grid;
 	grid-auto-rows: minmax(100px, auto);
 }
 
-.test {
-	flex: 1 1 auto;
-}
-
-.viiideo-container {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-	justify-content: center;
-}
-
-.pariiiiticipant {
-	flex-basis: 30%;
-	flex-shrink: 1;
-}
-
-.test {
-	/*background-color: #f0f; */
-}

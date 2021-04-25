@@ -1,7 +1,8 @@
 import React from 'react'
 import {render} from 'react-dom'
-import {Router} from '@reach/router'
+import {LocationProvider, Router} from '@reach/router'
 
+// awful react hack for snowpack
 const {useState} = React
 
 import {
@@ -11,33 +12,36 @@ import {
 	Participant,
 } from '@/routes'
 
-import {UserBar} from '@/components/PeerParticipant'
 
 import {AppContext, StreamContext, PeerContext} from '@/util/contexts'
 import {useStream, usePeer} from '@/util/hooks'
+import {UserBar} from '@/components'
 
 const App = () => {
 	const [name, setName] = useState<string>('')
 	const stream = useStream()
 	const peerDetails = usePeer()
+
 	return (
-		<div className="h-full text-white bg-gray-900">
-			<div className="h-full">
-				<AppContext.Provider value={{name, setName}}>
-					<StreamContext.Provider value={{stream}}>
-						<PeerContext.Provider value={peerDetails}>
-							<Router className="">
-								<Home path="/" />
-								<Host path="/host" />
-								<Connector path="/join" />
-								<Participant path="/room/:id" />
-							</Router>
-						</PeerContext.Provider>
-					</StreamContext.Provider>
-				</AppContext.Provider>
+		<LocationProvider>
+			<div className="text-white bg-gray-900">
+				<div className="">
+					<AppContext.Provider value={{name, setName}}>
+						<StreamContext.Provider value={{stream}}>
+							<PeerContext.Provider value={peerDetails}>
+								<Router className="">
+									<Home path="/" />
+									<Host path="/host" />
+									<Connector path="/join" />
+									<Participant path="/room/:id" />
+								</Router>
+							</PeerContext.Provider>
+						</StreamContext.Provider>
+					</AppContext.Provider>
+				</div>
+				<UserBar stream={stream} />
 			</div>
-			<UserBar stream={stream} />
-		</div>
+		</LocationProvider>
 	)
 }
 

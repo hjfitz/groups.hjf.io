@@ -3,36 +3,12 @@ import React from 'react'
 import {copy, usePeer} from '@/util'
 import {AppContext, AppCtx, PeerCtx} from '@/util/contexts'
 
-const {useRef, useEffect, useState, useContext} = React
-
-interface BarProps {
-	stream?: MediaStream
-}
+const {useRef, useEffect, useContext} = React
 
 interface PlayerProps {
 	id: string
 	displayName?: string
 	stream: MediaStream
-}
-
-export const UserBar: React.FC<BarProps> = ({stream}) => {
-	const [muted, setMute] = useState<boolean>(false)
-	function toggleMute() {
-		if (!stream) return
-		setMute((current) => {
-			stream.getAudioTracks().forEach(track => track.enabled = current)
-			return !current
-		})
-	}
-	return (
-		<div>
-			<section className="fixed bottom-0 z-20 w-full bg-black ">
-				<div className="flex px-4 py-4">
-					<div onClick={toggleMute} className="cursor-pointer">Muted: {muted.toString()}</div>
-				</div>
-			</section>
-		</div>
-	)
 }
 
 const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}) => {
@@ -43,6 +19,7 @@ const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}) => 
 		displayName = id
 	}
 	const player = useRef<HTMLVideoElement>(null)
+	const nameTag = useRef<HTMLParagraphElement>(null)
 	const vidClass = self ? 'self' : ''
 
 	// need to re-play state if we get a new stream
@@ -50,21 +27,27 @@ const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}) => 
 		if (!player || !player.current) return
 		player.current.srcObject = stream
 		player.current.play()
+		player.current.addEventListener('playing', () => {
+			if (!player.current || !nameTag.current) return
+			const {width} = player.current.getBoundingClientRect()
+			nameTag.current.style.width = `${width}px`
+		})
 	}, [stream])
 
 
 	return (
-		<div>
-			<div className="relative flex-col-reverse flex-auto h-full m-4 participant justify-items-center">
-				<p 
-					onClick={copy(id)} 
-					className="absolute bottom-0 left-0 right-0 z-10 px-3 py-1 bg-black cursor-default transition duration-300 hover:opacity-100 opacity-80"
-				>
-					{(self && name) ? name : displayName}
-				</p>
-				<video className={vidClass + ' h-full mx-auto'} ref={player} />
+			<div className="flex items-center justify-center h-full p-4 participant">
+				<div>
+					<video className={vidClass + ' mx-auto'} ref={player} />
+					<p 
+						ref={nameTag}
+						onClick={copy(id)} 
+						className="z-10 px-3 py-1 mx-auto bg-black cursor-default transition duration-300 hover:opacity-100 opacity-80"
+					>
+						{(self && name) ? name : displayName}
+					</p>
+				</div>
 			</div>
-		</div>
 	)
 }
 

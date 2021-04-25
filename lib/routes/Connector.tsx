@@ -1,11 +1,10 @@
 import React, {KeyboardEvent, FC} from 'react'
-import {navigate} from '@reach/router'
-import {RoutedComponent} from '@/routes/types'
+import {navigate, RouteComponentProps} from '@reach/router'
 
 const {useRef} = React
 
 
-const Connector: FC<RoutedComponent> = () => {
+const Connector: FC<RouteComponentProps> = () => {
 	const input = useRef<HTMLInputElement>(null)
 
 	const keyNav = ({key}: KeyboardEvent) => {

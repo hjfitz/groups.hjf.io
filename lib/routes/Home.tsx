@@ -1,12 +1,11 @@
 import React, {KeyboardEvent} from 'react'
-import {Link} from '@reach/router'
+import {Link, RouteComponentProps} from '@reach/router'
 
 import {AppContext, AppCtx} from '@/util/contexts'
-import {RoutedComponent} from '@/routes/types'
 
 const {useContext} = React
 
-const Home: React.FC<RoutedComponent> = () => {
+const Home: React.FC<RouteComponentProps> = () => {
 	const {setName} = useContext(AppContext) as AppCtx 
 	const changeName = (ev: KeyboardEvent<HTMLInputElement>) => setName((ev.target as HTMLInputElement).value)
 	return (

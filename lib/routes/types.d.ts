@@ -1,15 +1,12 @@
+import {RouteComponentProps} from '@reach/router';
 import {MediaConnection} from 'peerjs'
 
-
-export interface RoutedComponent {
-	path: string
-}
 
 export interface SentPeerList extends HostPayload {
 	list: PeerDetails[]
 }
 
-export interface ParticipantProps extends RoutedComponent {
+export interface ParticipantProps extends RouteComponentProps {
 	id?: string
 }
 

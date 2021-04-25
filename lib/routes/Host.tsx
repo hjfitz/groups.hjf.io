@@ -1,24 +1,14 @@
 import React, {FC} from 'react'
+import {RouteComponentProps} from '@reach/router'
 
-import {PeerParticipant} from '@/components'
 import {useDeveloperMode, useStream, usePeer} from '@/util'
 import {AppContext} from '@/util/contexts'
-import {RoutedComponent, ConnectedPeer, SentPeerList} from '@/routes/types'
+import {ConnectedPeer, SentPeerList} from '@/routes/types'
 import ParticipantsList from '@/components/ParticipantsList'
 
 const {useState, useEffect, useContext} = React
 
-function getCols(pps: number) {
-	if (pps === 1) return 1
-	if (pps < 3) return 2
-	if (pps < 6) return 3
-	if (pps < 10) return 4
-	if (pps < 13) return 5
-	return 6
-}
-
-
-const Host: FC<RoutedComponent> = () => {
+const Host: FC<RouteComponentProps> = () => {
 	const {name} = useContext(AppContext)
 	const {peer, id} = usePeer() 
 	const stream = useStream()
