@@ -1,11 +1,17 @@
 import React, {FC} from 'react'
+import {DataConnection} from 'peerjs'
 
-import {PatchedMediaStream, ConnectedPeer, ParticipantProps, HostPayload, SentPeerList} from '@/routes/types'
-import {PeerParticipant} from '@/components'
+import ParticipantsList from '@/components/ParticipantsList'
 import {useStream, usePeer} from '@/util'
 import {AppContext} from '@/util/contexts'
-import {DataConnection, MediaConnection} from 'peerjs'
-
+import {
+	HostPayload, 
+	SentPeerList,
+	ConnectedPeer, 
+	ParticipantProps, 
+	PatchedMediaStream, 
+} from '@/routes/types'
+	
 const {
 	useState, 
 	useEffect, 
@@ -111,20 +117,7 @@ const Participant: FC<ParticipantProps> = (props) => {
 		setHost(conn)
 	}, [stream])
 
-	// todo: pull in host logic from peer 
-	// maybe abstract what is returned to another component that takes a peer list as a prop
-
-	return (
-		<section className="video-container">
-			<PeerParticipant id={id.current} stream={stream} />
-			{peerConnections.map(peer => (
-				<PeerParticipant
-					key={peer.id} 
-					{...peer} 
-				/>
-			))}
-		</section>
-	)
+	return <ParticipantsList participants={peerConnections} stream={stream} />
 }
 
 export default Participant

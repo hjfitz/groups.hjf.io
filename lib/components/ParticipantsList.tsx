@@ -1,7 +1,10 @@
-import React from 'react'
+import {ConnectedPeer} from '@/routes/types'
+import {usePeer} from '@/util'
+import React, {FC} from 'react'
 import PeerParticipant from './PeerParticipant'
 
-function getCols(pps) {
+function getCols(pps: number) {
+	if (pps === 1) return 1
 	if (pps < 3) return 2
 	if (pps < 6) return 3
 	if (pps < 10) return 4
@@ -9,7 +12,13 @@ function getCols(pps) {
 	return 6
 }
 
-const ParticipantsList = ({participants}) => {
+interface ListProps {
+	participants: ConnectedPeer[]
+	stream: MediaStream
+}
+
+const ParticipantsList: FC<ListProps> = ({participants, stream}) => {
+	const {id} = usePeer()
 	const cols = getCols(participants.length + 1)
 	const className = `video-container grid-cols-${cols}`
 
@@ -18,7 +27,7 @@ const ParticipantsList = ({participants}) => {
 			<section className={className}>
 				<PeerParticipant id={id.current} stream={stream} />
 
-				{participants.map(participant => (
+				{participants.map((participant) => (
 					<PeerParticipant
 						key={participant.id} 
 						{...participant} 

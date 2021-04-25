@@ -13,9 +13,8 @@ import {
 
 import {UserBar} from '@/components/PeerParticipant'
 
-import {AppContext, StreamContext, PeerContext} from './util/contexts'
-// todo: handle this better
-import {useStream, usePeer} from './util/hooks'
+import {AppContext, StreamContext, PeerContext} from '@/util/contexts'
+import {useStream, usePeer} from '@/util/hooks'
 
 const App = () => {
 	const [name, setName] = useState<string>('')

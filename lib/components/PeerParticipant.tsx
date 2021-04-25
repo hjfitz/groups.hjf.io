@@ -58,11 +58,11 @@ const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}) => 
 			<div className="relative flex-col-reverse flex-auto h-full m-4 participant justify-items-center">
 				<p 
 					onClick={copy(id)} 
-					className="absolute bottom-0 left-0 z-10 px-3 py-1 bg-black cursor-default transition duration-300 hover:opacity-100 opacity-80"
+					className="absolute bottom-0 left-0 right-0 z-10 px-3 py-1 bg-black cursor-default transition duration-300 hover:opacity-100 opacity-80"
 				>
 					{(self && name) ? name : displayName}
 				</p>
-				<video className={vidClass + ' h-full'} ref={player} />
+				<video className={vidClass + ' h-full mx-auto'} ref={player} />
 			</div>
 		</div>
 	)

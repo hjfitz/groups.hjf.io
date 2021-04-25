@@ -3,11 +3,13 @@ import React, {FC} from 'react'
 import {PeerParticipant} from '@/components'
 import {useDeveloperMode, useStream, usePeer} from '@/util'
 import {AppContext} from '@/util/contexts'
-import {RoutedComponent, HostedPeer, SentPeerList} from '@/routes/types'
+import {RoutedComponent, ConnectedPeer, SentPeerList} from '@/routes/types'
+import ParticipantsList from '@/components/ParticipantsList'
 
 const {useState, useEffect, useContext} = React
 
 function getCols(pps: number) {
+	if (pps === 1) return 1
 	if (pps < 3) return 2
 	if (pps < 6) return 3
 	if (pps < 10) return 4
@@ -24,7 +26,7 @@ const Host: FC<RoutedComponent> = () => {
 
 	// participant list has interface:
 	// id, stream, displayName (defaults to id)
-	const [participants, setParticipants] = useState<HostedPeer[]>([])
+	const [participants, setParticipants] = useState<ConnectedPeer[]>([])
 
 	useDeveloperMode(setParticipants)
 
@@ -112,23 +114,7 @@ const Host: FC<RoutedComponent> = () => {
 		
 	}, [stream])
 
-	const cols = getCols(participants.length + 1)
-	const className = `video-container grid-cols-${cols}`
-
-	return (
-		<>
-			<section className={className}>
-				<PeerParticipant id={id.current} stream={stream} />
-
-				{participants.map(participant => (
-					<PeerParticipant
-						key={participant.id} 
-						{...participant} 
-					/>
-				))}
-			</section>
-		</>
-	)
+	return <ParticipantsList participants={participants} stream={stream} />
 }
 
 export default Host

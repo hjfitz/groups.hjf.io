@@ -1,1 +1,2 @@
-export {default as PeerParticipant} from '@/components/PeerParticipant'
+export {default as PeerParticipant} from './PeerParticipant'
+export {default as ParticipantsList} from './ParticipantsList'

@@ -32,11 +32,6 @@ export interface ConnectedPeer extends PeerDetails {
 	stream: MediaStream 
 }
 
-export interface HostedPeer extends PeerDetails {
-	stream: MediaStream
-}
-
-
 export interface PatchedMediaStream extends MediaConnection {
 	options: {
 		metadata: string

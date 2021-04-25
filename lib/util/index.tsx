@@ -39,7 +39,7 @@ export function useDeveloperMode(setList: Function) {
 		const vidNumRaw = url.get('v')
 		const vidNum = parseInt(vidNumRaw ?? '4', 10)
 		
-		if (!Number.isInteger(vidNum)) return
+		if (!vidNumRaw || !Number.isInteger(vidNum)) return
 		// both states (host and reg) follow the same interface
 		// id, stream, displayName
 		// todo - type states better
