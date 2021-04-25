@@ -104,7 +104,7 @@ const Host: FC<RouteComponentProps> = () => {
 		
 	}, [stream])
 
-	return <ParticipantsList participants={participants} stream={stream} />
+	return <ParticipantsList participants={participants} />
 }
 
 export default Host

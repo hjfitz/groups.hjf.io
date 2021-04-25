@@ -3,7 +3,6 @@ import {navigate, RouteComponentProps} from '@reach/router'
 
 const {useRef} = React
 
-
 const Connector: FC<RouteComponentProps> = () => {
 	const input = useRef<HTMLInputElement>(null)
 
@@ -18,10 +17,10 @@ const Connector: FC<RouteComponentProps> = () => {
 	}
 
 	return (
-		<main className="flex flex-col items-center justify-center h-full">
+		<main className="flex flex-col items-center justify-center h-screen">
 			<div className="w-64">
 				<input 
-					className="w-full p-2 mb-2 text-black rounded" 
+					className="queryin" 
 					ref={input} 
 					onKeyUp={keyNav} 
 					placeholder="Enter the Peer ID here" 

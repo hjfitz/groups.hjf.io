@@ -117,7 +117,7 @@ const Participant: FC<ParticipantProps> = (props) => {
 		setHost(conn)
 	}, [stream])
 
-	return <ParticipantsList participants={peerConnections} stream={stream} />
+	return <ParticipantsList participants={peerConnections} />
 }
 
 export default Participant

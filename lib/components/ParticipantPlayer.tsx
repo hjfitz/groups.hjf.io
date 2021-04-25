@@ -38,7 +38,7 @@ const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}) => 
 	return (
 			<div className="flex items-center justify-center h-full p-4 participant">
 				<div>
-					<video className={vidClass + ' mx-auto'} ref={player} />
+					<video disablePictureInPicture controlsList="nodownload" className={vidClass + ' mx-auto'} ref={player} />
 					<p 
 						ref={nameTag}
 						onClick={copy(id)} 

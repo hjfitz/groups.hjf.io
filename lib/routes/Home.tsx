@@ -9,7 +9,7 @@ const Home: React.FC<RouteComponentProps> = () => {
 	const {setName} = useContext(AppContext) as AppCtx 
 	const changeName = (ev: KeyboardEvent<HTMLInputElement>) => setName((ev.target as HTMLInputElement).value)
 	return (
-		<main className="flex flex-col items-center justify-center h-full">
+		<main className="flex flex-col items-center justify-center h-screen">
 			<h1 className="text-3xl">Are you hosting or joining?</h1>
 			<div className="flex justify-between w-64 my-2 text-center">
 				<Link className="btn" to="/host">Hosting</Link>
@@ -17,7 +17,7 @@ const Home: React.FC<RouteComponentProps> = () => {
 			</div>
 			<div className="flex w-64">
 				<input 
-					className="w-full px-4 py-2 mx-2 text-white bg-gray-600 rounded" 
+					className="queryin"
 					placeholder="Enter your name here"
 					onKeyUp={changeName} 
 				/>

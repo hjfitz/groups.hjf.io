@@ -34,3 +34,7 @@ html, body, #main {
 	grid-auto-rows: minmax(100px, auto);
 }
 
+.queryin {
+	@apply w-full px-4 py-2 mx-2 text-white bg-gray-600 rounded
+}
+
