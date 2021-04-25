@@ -1,15 +1,24 @@
 import React from 'react'
 
-import {copy, usePeer} from '../util'
-import {AppContext} from '../util/contexts'
+import {copy, usePeer} from '@/util'
+import {AppContext, AppCtx, PeerCtx} from '@/util/contexts'
 
 const {useRef, useEffect, useState, useContext} = React
 
-// todo: potentially split stream in to a context and move this to the root?
-export const UserBar = ({stream}) => {
-	const [muted, setMute] = useState(false)
-	const {peer} = usePeer()
+interface BarProps {
+	stream?: MediaStream
+}
+
+interface PlayerProps {
+	id: string
+	displayName?: string
+	stream: MediaStream
+}
+
+export const UserBar: React.FC<BarProps> = ({stream}) => {
+	const [muted, setMute] = useState<boolean>(false)
 	function toggleMute() {
+		if (!stream) return
 		setMute((current) => {
 			stream.getAudioTracks().forEach(track => track.enabled = current)
 			return !current
@@ -26,18 +35,19 @@ export const UserBar = ({stream}) => {
 	)
 }
 
-const ParticipantPlayer = ({id, displayName, stream}) => {
-	const {name} = useContext(AppContext)
-	const {id: selfID} = usePeer()
-	const self = id === selfID
+const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}) => {
+	const {name} = useContext(AppContext) as AppCtx
+	const {id: selfID} = usePeer() as PeerCtx
+	const self = id === selfID.current
 	if (!displayName && !name) {
 		displayName = id
 	}
-	const player = useRef(null)
+	const player = useRef<HTMLVideoElement>(null)
 	const vidClass = self ? 'self' : ''
 
 	// need to re-play state if we get a new stream
 	useEffect(() => {
+		if (!player || !player.current) return
 		player.current.srcObject = stream
 		player.current.play()
 	}, [stream])

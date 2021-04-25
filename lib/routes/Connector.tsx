@@ -1,17 +1,19 @@
-import React from 'react'
+import React, {KeyboardEvent, FC} from 'react'
 import {navigate} from '@reach/router'
+import {RoutedComponent} from '@/routes/types'
 
 const {useRef} = React
 
 
-const Connector = () => {
-	const input = useRef(null)
+const Connector: FC<RoutedComponent> = () => {
+	const input = useRef<HTMLInputElement>(null)
 
-	const keyNav = ({key}) => {
+	const keyNav = ({key}: KeyboardEvent) => {
 		if (key === 'Enter') nav()
 	}
 
 	const nav = () => {
+		if (!input.current) return
 		const {value} = input.current
 		navigate(`/room/${value}`)
 	}

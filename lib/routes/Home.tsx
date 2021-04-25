@@ -1,13 +1,14 @@
-import React from 'react'
+import React, {KeyboardEvent} from 'react'
 import {Link} from '@reach/router'
 
-import {AppContext} from '../util/contexts'
+import {AppContext, AppCtx} from '@/util/contexts'
+import {RoutedComponent} from '@/routes/types'
 
 const {useContext} = React
 
-const Home = () => {
-	const {setName} = useContext(AppContext)
-	const changeName = (ev) => setName(ev.target.value)
+const Home: React.FC<RoutedComponent> = () => {
+	const {setName} = useContext(AppContext) as AppCtx 
+	const changeName = (ev: KeyboardEvent<HTMLInputElement>) => setName((ev.target as HTMLInputElement).value)
 	return (
 		<main className="flex flex-col items-center justify-center h-full">
 			<h1 className="text-3xl">Are you hosting or joining?</h1>

@@ -9,16 +9,16 @@ import {
 	Host,
 	Connector,
 	Participant,
-} from './routes'
+} from '@/routes'
 
-import {UserBar} from './components/PeerParticipant'
+import {UserBar} from '@/components/PeerParticipant'
 
 import {AppContext, StreamContext, PeerContext} from './util/contexts'
 // todo: handle this better
 import {useStream, usePeer} from './util/hooks'
 
 const App = () => {
-	const [name, setName] = useState(null)
+	const [name, setName] = useState<string>('')
 	const stream = useStream()
 	const peerDetails = usePeer()
 	return (
@@ -44,4 +44,4 @@ const App = () => {
 
 const entry = document.getElementById('main')
 
-render(<App />, entry)
+if (entry) render(<App />, entry)

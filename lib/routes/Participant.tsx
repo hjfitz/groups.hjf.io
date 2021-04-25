@@ -1,8 +1,9 @@
-import React from 'react'
+import React, {FC} from 'react'
 
-import {PeerParticipant} from '../components'
-import {useStream, usePeer} from '../util'
-import {AppContext} from '../util/contexts'
+import {RoutedComponent, Participant} from '@/routes/types'
+import {PeerParticipant} from '@/components'
+import {useStream, usePeer} from '@/util'
+import {AppContext} from '@/util/contexts'
 
 const {
 	useState, 
@@ -10,13 +11,17 @@ const {
 	useContext,
 } = React
 
-const Participant = (props) => {
+interface ParticipantProps extends RoutedComponent {
+	id?: string
+}
+
+const Participant: FC<ParticipantProps> = (props) => {
 	const {peer, id} = usePeer()
 	const {name} = useContext(AppContext)
 	const stream = useStream()
 
 	// call management
-	const [peerConnections, setPeerConnections] = useState([])
+	const [peerConnections, setPeerConnections] = useState<Participant[]>([])
 
 	const [host, setHost] = useState(null)
 
@@ -107,6 +112,8 @@ const Participant = (props) => {
 		setHost(conn)
 	}, [stream])
 
+	// todo: pull in host logic from peer 
+	// maybe abstract what is returned to another component that takes a peer list as a prop
 
 	return (
 		<section className="video-container">

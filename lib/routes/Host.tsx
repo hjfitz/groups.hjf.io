@@ -1,12 +1,13 @@
-import React from 'react'
+import React, {FC} from 'react'
 
-import {useDeveloperMode, useStream, usePeer} from '../util'
-import {PeerParticipant} from '../components'
-import {AppContext} from '../util/contexts'
+import {PeerParticipant} from '@/components'
+import {useDeveloperMode, useStream, usePeer} from '@/util'
+import {AppContext} from '@/util/contexts'
+import {RoutedComponent, Participant} from '@/routes/types'
 
 const {useState, useEffect, useContext} = React
 
-function getCols(pps) {
+function getCols(pps: number) {
 	if (pps < 3) return 2
 	if (pps < 6) return 3
 	if (pps < 10) return 4
@@ -14,15 +15,17 @@ function getCols(pps) {
 	return 6
 }
 
-const Host = () => {
+
+
+const Host: FC<RoutedComponent> = () => {
 	const {name} = useContext(AppContext)
-	const {peer, id} = usePeer()
+	const {peer, id} = usePeer() 
 	const stream = useStream()
 
 
 	// participant list has interface:
 	// id, stream, displayName (defaults to id)
-	const [participants, setParticipants] = useState([])
+	const [participants, setParticipants] = useState<Participant[]>([])
 
 	useDeveloperMode(setParticipants)
 
@@ -32,6 +35,7 @@ const Host = () => {
 		console.log(`sending new participant list to peers: ${JSON.stringify(participants)}`)
 		// when we change participants, let them know about the new list
 		participants.forEach((ptp) => {
+			if (!peer || !peer.current) return
 
 			const listToShare = participants
 				.filter(pp => pp.id !== ptp.id)
@@ -57,7 +61,7 @@ const Host = () => {
 	}, [participants])
 
 	useEffect(() => {
-		if (!stream) return
+		if (!stream || (!peer || !peer.current)) return
 		// on request join, update peer list
 		// that update should send list to peer
 		// peer should call us
