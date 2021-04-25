@@ -1,5 +1,6 @@
 module.exports = {
-  purge: [
-    './*.jsx',
-  ],
+	purge: [
+		'./*.tsx',
+		'./*.css',
+	],
 }
