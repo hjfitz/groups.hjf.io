@@ -2,12 +2,12 @@ import React, {FC} from 'react'
 import {DataConnection} from 'peerjs'
 
 import ParticipantsList from '@/components/ParticipantsList'
-import {useStream, usePeer} from '@/util'
-import {AppContext} from '@/util/contexts'
+import {useStream, usePeer, useParticipants, useApp} from '@/contexts/hooks'
+import {AppContext} from '@/contexts/providers'
+
 import {
 	HostPayload,
 	SentPeerList,
-	ConnectedPeer,
 	ParticipantProps,
 	PatchedMediaStream,
 } from '@/routes/types'
@@ -22,11 +22,17 @@ const Participant: FC<ParticipantProps> = (props: ParticipantProps) => {
 	const {peer, id} = usePeer()
 	const {name} = useContext(AppContext)
 	const stream = useStream()
+	const {setHost: setHostID} = useApp()
 
 	// call management
-	const [peerConnections, setPeerConnections] = useState<ConnectedPeer[]>([])
+	const {participants, setParticipants} = useParticipants()
 
 	const [host, setHost] = useState<DataConnection>()
+
+	useEffect(() => {
+		if (!props.id) return
+		setHostID(props.id)
+	}, [])
 
 	/// /////////
 	// CONNECT TO THOSE PEERS
@@ -70,14 +76,14 @@ const Participant: FC<ParticipantProps> = (props: ParticipantProps) => {
 			dial.answer(stream)
 
 			dial.on('stream', (peerStream) => {
-				setPeerConnections((activeConnections) => {
+				setParticipants((activeConnections) => {
 					const {displayName} = JSON.parse((dial as PatchedMediaStream).options.metadata)
 					const hasPeer = activeConnections.some((conn) => conn.id === dial.peer)
 					if (hasPeer) return activeConnections
 					return [...activeConnections, {
 						id: dial.peer,
 						stream: peerStream,
-						displayName,
+						displayName: displayName || dial.peer,
 					}]
 				})
 			})
@@ -85,7 +91,7 @@ const Participant: FC<ParticipantProps> = (props: ParticipantProps) => {
 			dial.on('close', () => {
 				// cleanup: remove the peer once it disconnects
 				// todo: if the host leaves, kill the session
-				setPeerConnections((conns) => conns.filter((conn) => conn.id !== dial.peer))
+				setParticipants((conns) => conns.filter((conn) => conn.id !== dial.peer))
 			})
 		})
 	}, [stream, host])
@@ -115,7 +121,7 @@ const Participant: FC<ParticipantProps> = (props: ParticipantProps) => {
 		setHost(conn)
 	}, [stream])
 
-	return <ParticipantsList participants={peerConnections} />
+	return <ParticipantsList participants={participants} />
 }
 
 export default Participant

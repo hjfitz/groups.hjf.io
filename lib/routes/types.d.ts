@@ -9,15 +9,6 @@ export interface ParticipantProps extends RouteComponentProps {
 	id?: string
 }
 
-export interface HostPayload {
-	event: string
-}
-
-export interface PeerListPayload extends HostPayload {
-	id: string
-	displayName: string
-}
-
 interface PeerDetails {
 	id: string
 	displayName: string
@@ -32,4 +23,22 @@ export interface PatchedMediaStream extends MediaConnection {
 	options: {
 		metadata: string
 	}
+}
+
+/// ///////////////////
+// DataConnection payloads
+/// ///////////////////
+
+export interface HostPayload {
+	event: string
+}
+
+export interface PeerListPayload extends HostPayload {
+	id: string
+	displayName: string
+}
+
+export interface MessagePayload extends HostPayload {
+	who: string
+	message: string
 }

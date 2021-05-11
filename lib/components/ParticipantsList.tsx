@@ -1,8 +1,8 @@
 import React, {FC} from 'react'
 
 import {ConnectedPeer} from '@/routes/types'
-import {usePeer, useStream} from '@/util'
-import {ParticipantPlayer} from '@/components/'
+import {usePeer, useStream} from '@/contexts/hooks'
+import {ParticipantPlayer} from '@/components'
 
 function getCols(pps: number) {
 	if (pps === 1) return 1

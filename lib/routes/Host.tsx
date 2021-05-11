@@ -1,23 +1,29 @@
 import React, {FC} from 'react'
 import {RouteComponentProps} from '@reach/router'
 
-import {useDeveloperMode, useStream, usePeer} from '@/util'
-import {AppContext} from '@/util/contexts'
-import {ConnectedPeer, SentPeerList} from '@/routes/types'
+import {useDeveloperMode, useStream, usePeer, useParticipants, useApp} from '@/contexts/hooks'
+import {AppContext} from '@/contexts/providers'
+import {SentPeerList} from '@/routes/types'
 import ParticipantsList from '@/components/ParticipantsList'
 
-const {useState, useEffect, useContext} = React
+const {useEffect, useContext} = React
 
 const Host: FC<RouteComponentProps> = () => {
 	const {name} = useContext(AppContext)
 	const {peer, id} = usePeer()
 	const stream = useStream()
+	const {setHost} = useApp()
 
 	// participant list has interface:
 	// id, stream, displayName (defaults to id)
-	const [participants, setParticipants] = useState<ConnectedPeer[]>([])
+	const {participants, setParticipants} = useParticipants()
 
 	useDeveloperMode(setParticipants)
+
+	useEffect(() => {
+		if (!id.current) return
+		setHost(id.current)
+	}, [id])
 
 	useEffect(() => {
 		if (!participants.length) return
@@ -65,7 +71,7 @@ const Host: FC<RouteComponentProps> = () => {
 			conn.on('data', (data) => {
 				const payload = JSON.parse(data)
 				if (payload.event === 'request.join') {
-					peerName = payload.name
+					if (payload.name) peerName = payload.name
 					const dial = peer.current.call(conn.peer, stream, {
 						metadata: JSON.stringify({displayName: name ?? id.current}),
 					})

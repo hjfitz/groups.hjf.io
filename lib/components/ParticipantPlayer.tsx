@@ -1,7 +1,8 @@
 import React from 'react'
 
-import {copy, usePeer} from '@/util'
-import {AppContext, AppCtx, PeerCtx} from '@/util/contexts'
+import {copy} from '@/util'
+import {AppContext, AppCtx} from '@/contexts/providers'
+import {usePeer} from '@/contexts/hooks'
 
 const {useRef, useEffect, useContext} = React
 
@@ -14,7 +15,7 @@ interface PlayerProps {
 const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}: PlayerProps) => {
 	let dispName = displayName
 	const {name} = useContext(AppContext) as AppCtx
-	const {id: selfID} = usePeer() as PeerCtx
+	const {id: selfID} = usePeer()
 	const self = id === selfID.current
 	if (!displayName && !name) {
 		dispName = id
@@ -38,7 +39,13 @@ const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}: Pla
 	return (
 		<div className="flex items-center justify-center h-full p-4 participant">
 			<div>
-				<video disablePictureInPicture controlsList="nodownload" className={`${vidClass} mx-auto`} ref={player} />
+				<video
+					disablePictureInPicture
+					controlsList="nodownload"
+					className={`${vidClass} mx-auto`}
+					ref={player}
+					muted={self}
+				/>
 				<p
 					ref={nameTag}
 					onClick={copy(id)}
