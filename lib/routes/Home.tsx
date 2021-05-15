@@ -12,6 +12,7 @@ const Home: React.FC<RouteComponentProps> = () => {
 		const {value} = ev.target as HTMLInputElement
 		dispatch(name(value))
 	}
+
 	return (
 		<main className="flex flex-col items-center justify-center h-screen">
 			<h1 className="text-3xl">Are you hosting or joining?</h1>

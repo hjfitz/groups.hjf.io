@@ -1,25 +1,31 @@
 import React, {FC} from 'react'
 import {RouteComponentProps} from '@reach/router'
 
-import {useDeveloperMode, useParticipants} from '@/contexts/hooks'
+import {useDeveloperMode} from '@/contexts/hooks'
 import {SentPeerList} from '@/routes/types'
 import ParticipantsList from '@/components/ParticipantsList'
 import {host, selectName} from '@/state/slices/metadata'
-import {useAppDispatch, useAppSelector} from '@/state/hooks'
-import {selectId, selectStream, peer} from '@/state/slices/peer'
+import {useAppDispatch, useAppSelector, useStream} from '@/state/hooks'
+
+import {id, peer} from '@/state/globals'
+import {
+	selectParticipants,
+	SetParticipantsCallback,
+	setParticipants as dispatchSetParticipants,
+} from '@/state/slices/peers'
 
 const {useEffect} = React
 
 const Host: FC<RouteComponentProps> = () => {
 	const dispatch = useAppDispatch()
 	const name = useAppSelector(selectName)
-	const id = useAppSelector(selectId)
 
-	const stream = useAppSelector(selectStream)
+	const stream = useStream()
 
 	// participant list has interface:
 	// id, stream, displayName (defaults to id)
-	const {participants, setParticipants} = useParticipants()
+	const participants = useAppSelector(selectParticipants)
+	const setParticipants = (cb: SetParticipantsCallback) => dispatch(dispatchSetParticipants(cb))
 
 	useDeveloperMode(setParticipants)
 
@@ -97,8 +103,9 @@ const Host: FC<RouteComponentProps> = () => {
 
 			// cull peer from list
 			conn.on('close', () => {
-				setParticipants((curParticipants) =>
-					curParticipants.filter((participant) => participant.id !== conn.peer))
+				// todo: remove participant via custom action (?)
+				// setParticipants(
+				// (curParticipants) => curParticipants.filter((participant) => participant.id !== conn.peer))
 			})
 		})
 	}, [stream])

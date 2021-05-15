@@ -1,7 +1,9 @@
 import {HostPayload, MessagePayload} from '@/routes/types'
-import {useApp, usePeer} from '@/contexts/hooks'
+import {useAppSelector} from '@/state/hooks'
+import {selectHost} from '@/state/slices/metadata'
 import {DataConnection} from 'peerjs'
 import React, {useEffect, useState} from 'react'
+import {peer} from '@/state/globals'
 
 interface ChatProps {
 	show: boolean
@@ -13,8 +15,7 @@ interface MessageIn {
 }
 
 const ChatIn: React.FC = () => {
-	const {peer} = usePeer()
-	const {host} = useApp()
+	const host = useAppSelector(selectHost)
 	function handleInput(ev) {
 		if (ev.key !== 'Enter') return
 		console.log(ev.target.value)
@@ -46,11 +47,10 @@ const defaultState: MessageIn[] = [
 
 const ChatBox: React.FC<ChatProps> = ({show}: ChatProps) => {
 	const [messages, setMessages] = useState<MessageIn[]>(defaultState)
-	const {peer} = usePeer()
 	useEffect(() => {
 		if (!peer) return
 		// do stuff
-		peer.current.on('connection', (conn: DataConnection) => {
+		peer.on('connection', (conn: DataConnection) => {
 			conn.on('data', (data) => {
 				const payload = JSON.parse(data) as HostPayload
 				if (payload.event !== 'message.send') return

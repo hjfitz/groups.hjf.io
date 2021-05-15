@@ -1,12 +1,12 @@
 import {configureStore} from '@reduxjs/toolkit'
 import metadataReducer from '@/state/slices/metadata'
-import peerReducer from '@/state/slices/peer'
+import participantsReducer from '@/state/slices/peers'
 
 export const store = configureStore({
 	devTools: true,
 	reducer: {
 		metadata: metadataReducer,
-		peer: peerReducer,
+		participants: participantsReducer,
 	},
 })
 

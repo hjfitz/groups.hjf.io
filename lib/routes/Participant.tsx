@@ -2,7 +2,6 @@ import React, {FC} from 'react'
 import {DataConnection} from 'peerjs'
 
 import ParticipantsList from '@/components/ParticipantsList'
-import {useParticipants} from '@/contexts/hooks'
 import {host as dispatchHost, selectName} from '@/state/slices/metadata'
 
 import {
@@ -11,8 +10,9 @@ import {
 	ParticipantProps,
 	PatchedMediaStream,
 } from '@/routes/types'
-import {useAppDispatch, useAppSelector} from '@/state/hooks'
-import {selectStream, selectId, peer} from '@/state/slices/peer'
+import {useAppDispatch, useAppSelector, useStream} from '@/state/hooks'
+import {id, peer} from '@/state/globals'
+import {selectParticipants, setParticipants as dispatchParticipants, SetParticipantsCallback} from '@/state/slices/peers'
 
 const {
 	useState,
@@ -21,12 +21,16 @@ const {
 
 const Participant: FC<ParticipantProps> = (props: ParticipantProps) => {
 	const dispatch = useAppDispatch()
-	const id = useAppSelector(selectId)
-	const stream = useAppSelector(selectStream)
 	const name = useAppSelector(selectName)
+	const stream = useStream()
 
 	// call management
-	const {participants, setParticipants} = useParticipants()
+	const participants = useAppSelector(selectParticipants)
+
+	const setParticipants = (callback: SetParticipantsCallback) => {
+		dispatch(dispatchParticipants(callback))
+	}
+	// const {participants, setParticipants} = useParticipants()
 
 	const [host, setHost] = useState<DataConnection>()
 

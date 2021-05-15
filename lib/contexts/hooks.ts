@@ -1,17 +1,9 @@
-import {useContext, useEffect} from 'react'
+import {useEffect} from 'react'
 
-import {
-	ParticipantsContext,
-} from '@/contexts/providers'
-import {useAppSelector} from '@/state/hooks'
-import {selectStream} from '@/state/slices/peer'
-
-export function useParticipants() {
-	return useContext(ParticipantsContext)
-}
+import {useStream} from '@/state/hooks'
 
 export function useDeveloperMode(setList: Function) {
-	const stream = useAppSelector(selectStream)
+	const stream = useStream()
 	useEffect(() => {
 		if (!stream) return
 		const url = new URLSearchParams(window.location.search)
