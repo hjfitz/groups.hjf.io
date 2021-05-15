@@ -1,18 +1,19 @@
 import React, {FC} from 'react'
 import {RouteComponentProps} from '@reach/router'
 
-import {useDeveloperMode, useStream, usePeer, useParticipants, useApp} from '@/contexts/hooks'
-import {AppContext} from '@/contexts/providers'
+import {useDeveloperMode, useStream, usePeer, useParticipants} from '@/contexts/hooks'
 import {SentPeerList} from '@/routes/types'
 import ParticipantsList from '@/components/ParticipantsList'
+import {host, selectName} from '@/state/slices/metadata'
+import {useAppDispatch, useAppSelector} from '@/state/hooks'
 
-const {useEffect, useContext} = React
+const {useEffect} = React
 
 const Host: FC<RouteComponentProps> = () => {
-	const {name} = useContext(AppContext)
+	const dispatch = useAppDispatch()
+	const name = useAppSelector(selectName)
 	const {peer, id} = usePeer()
 	const stream = useStream()
-	const {setHost} = useApp()
 
 	// participant list has interface:
 	// id, stream, displayName (defaults to id)
@@ -22,7 +23,8 @@ const Host: FC<RouteComponentProps> = () => {
 
 	useEffect(() => {
 		if (!id.current) return
-		setHost(id.current)
+
+		dispatch(host(id.current))
 	}, [id])
 
 	useEffect(() => {

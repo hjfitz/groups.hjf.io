@@ -2,14 +2,6 @@ import React, {Dispatch, SetStateAction} from 'react'
 import Peer from 'peerjs'
 import {ConnectedPeer} from '@/routes/types'
 
-export interface AppCtx {
-	name: string
-	setName: Dispatch<SetStateAction<string>>
-
-	host: string
-	setHost: Dispatch<SetStateAction<string>>
-}
-
 export interface StreamCtx {
 	stream: MediaStream
 }
@@ -24,7 +16,6 @@ export interface ParticipantsCtx {
 	setParticipants: Dispatch<SetStateAction<ConnectedPeer[]>>
 }
 
-export const AppContext = React.createContext<Partial<AppCtx>>({})
 export const StreamContext = React.createContext<Partial<StreamCtx>>({})
 export const PeerContext = React.createContext<Partial<PeerCtx>>({})
 

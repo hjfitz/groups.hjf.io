@@ -1,13 +1,11 @@
-import {useContext, useEffect, useState} from 'react'
+import {useContext, useEffect} from 'react'
 
 import {
 	StreamContext,
 	PeerContext,
 	ParticipantsContext,
 	StreamCtx,
-	AppContext,
 	PeerCtx,
-	AppCtx,
 } from '@/contexts/providers'
 
 export function useStream() {
@@ -22,19 +20,6 @@ export function usePeer() {
 
 export function useParticipants() {
 	return useContext(ParticipantsContext)
-}
-
-export function useApp() {
-	const [url, setUrl] = useState<string>('')
-	const app = useContext(AppContext) as AppCtx
-
-	useEffect(() => {
-		const {origin} = window.location
-		const newUrl = `${origin}/room/${app.host}`
-		setUrl(newUrl)
-	}, [app.host])
-
-	return {...app, url}
 }
 
 export function useDeveloperMode(setList: Function) {

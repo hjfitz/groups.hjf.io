@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import {RootState} from '@/state/store'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 export interface MetaState {
@@ -25,6 +26,14 @@ export const metaSlice = createSlice({
 		},
 	},
 })
+
+export const selectName = (state: RootState) => state.metadata.name
+export const selectHost = (state: RootState) => state.metadata.host
+export const selectShareLink = (state: RootState) => {
+	const {origin} = window.location
+	const newUrl = `${origin}/room/${state.metadata.host}`
+	return newUrl
+}
 
 export const {name, host} = metaSlice.actions
 

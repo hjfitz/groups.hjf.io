@@ -1,8 +1,9 @@
 import React from 'react'
 import {useLocation} from '@reach/router'
-import {useApp} from '@/contexts/hooks'
 import ChatBox from '@/components/chat'
 import {copy} from '@/util'
+import {selectShareLink} from '@/state/slices/metadata'
+import {useAppSelector} from '@/state/hooks'
 
 const {useState} = React
 
@@ -16,7 +17,7 @@ const UserBar = (props: BarProps) => {
 	const allowedRoutes = ['/host', '/room']
 	if (!allowedRoutes.some((route) => location.pathname.includes(route))) return <></>
 
-	const {url} = useApp()
+	const url = useAppSelector(selectShareLink)
 
 	const [showChat, setShowChat] = useState<boolean>(true)
 	const toggleChat = () => setShowChat((cur) => !cur)

@@ -1,10 +1,11 @@
 import React from 'react'
 
 import {copy} from '@/util'
-import {AppContext, AppCtx} from '@/contexts/providers'
 import {usePeer} from '@/contexts/hooks'
+import {useAppSelector} from '@/state/hooks'
+import {selectName} from '@/state/slices/metadata'
 
-const {useRef, useEffect, useContext} = React
+const {useRef, useEffect} = React
 
 interface PlayerProps {
 	id: string
@@ -14,7 +15,9 @@ interface PlayerProps {
 
 const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}: PlayerProps) => {
 	let dispName = displayName
-	const {name} = useContext(AppContext) as AppCtx
+	// const {name} = useContext(AppContext) as AppCtx
+	const name = useAppSelector(selectName)
+
 	const {id: selfID} = usePeer()
 	const self = id === selfID.current
 	if (!displayName && !name) {

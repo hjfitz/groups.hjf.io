@@ -3,19 +3,13 @@ import {Link, RouteComponentProps} from '@reach/router'
 import {useAppDispatch} from '@/state/hooks'
 import {name} from '@/state/slices/metadata'
 
-import {AppContext, AppCtx} from '@/contexts/providers'
-
-const {useContext} = React
-
 type ChangeName = (ev: KeyboardEvent<HTMLInputElement>) => void
 
 const Home: React.FC<RouteComponentProps> = () => {
 	const dispatch = useAppDispatch()
 
-	const {setName} = useContext(AppContext) as AppCtx
 	const changeName: ChangeName = (ev) => {
 		const {value} = ev.target as HTMLInputElement
-		setName(value)
 		dispatch(name(value))
 	}
 	return (
