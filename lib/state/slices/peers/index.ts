@@ -19,11 +19,8 @@ export const metaSlice = createSlice({
 	// note, future me:
 	// redux uses immer; state param is a 'draft state'
 	reducers: {
-		addParticipant(state, action: PayloadAction<ConnectedPeer>) {
-			state.participants = [...state.participants, action.payload]
-		},
 		removeParticipant(state, action: PayloadAction<ConnectedPeer>) {
-			// todo: remove
+			state.participants = state.participants.filter((part) => part.id !== action.payload.id)
 		},
 		setParticipants(state, action: PayloadAction<SetParticipantsCallback>) {
 			const newParticipants = action.payload([...state.participants])
@@ -34,6 +31,6 @@ export const metaSlice = createSlice({
 
 export const selectParticipants = (state: RootState) => state.participants.participants
 
-export const {addParticipant, removeParticipant, setParticipants} = metaSlice.actions
+export const {removeParticipant, setParticipants} = metaSlice.actions
 
 export default metaSlice.reducer

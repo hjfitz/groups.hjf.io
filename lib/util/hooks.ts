@@ -1,12 +1,6 @@
-// todo: handle the organisation better here
-// we have context wrappers with the same names in ./index.jsx
-// maybe move these hooks to lib/main.hooks.js
-import React, {MutableRefObject} from 'react'
-import Peer from 'peerjs'
+import {useState, useEffect, useContext} from 'react'
 
-import {randID} from '@/util'
-
-const {useState, useRef, useEffect} = React
+import {StreamContext} from '@/state/contexts'
 
 export function useStream() {
 	const [stream, setStream] = useState<MediaStream>()
@@ -18,15 +12,27 @@ export function useStream() {
 	return stream
 }
 
-interface PeerDetails {
-	peer: MutableRefObject<Peer>
-	id: MutableRefObject<string>
-}
+export const usePlayer = () => useContext(StreamContext)
 
-// to be used by main - initialise the context
-export function usePeer(): PeerDetails {
-	const idInit = randID()
-	const id = useRef(idInit)
-	const peer = useRef(new Peer(idInit))
-	return {peer, id}
+export function useDeveloperMode(setList: Function) {
+	const stream = useStream()
+	useEffect(() => {
+		if (!stream) return
+		const url = new URLSearchParams(window.location.search)
+		const vidNumRaw = url.get('v')
+		const vidNum = parseInt(vidNumRaw ?? '4', 10)
+
+		if (!vidNumRaw || !Number.isInteger(vidNum)) return
+		// both states (host and reg) follow the same interface
+		// id, stream, displayName
+		// todo - type states better
+		setList((cur: Array<any>) => {
+			const fakeStreams = Array.from({length: vidNum}, () => ({
+				id: '__DeveloperInitiated_NODIAL',
+				displayName: '__DeveloperPeer',
+				stream,
+			}))
+			return [...cur, ...fakeStreams]
+		})
+	}, [stream])
 }

@@ -1,16 +1,17 @@
 import React, {KeyboardEvent} from 'react'
 import {Link, RouteComponentProps} from '@reach/router'
 import {useAppDispatch} from '@/state/hooks'
-import {name} from '@/state/slices/metadata'
+import {setName} from '@/state/slices/metadata'
 
 type ChangeName = (ev: KeyboardEvent<HTMLInputElement>) => void
 
 const Home: React.FC<RouteComponentProps> = () => {
 	const dispatch = useAppDispatch()
 
+	// typings are fucked
 	const changeName: ChangeName = (ev) => {
 		const {value} = ev.target as HTMLInputElement
-		dispatch(name(value))
+		dispatch(setName(value))
 	}
 
 	return (

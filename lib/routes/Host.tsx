@@ -1,11 +1,11 @@
 import React, {FC} from 'react'
 import {RouteComponentProps} from '@reach/router'
 
-import {useDeveloperMode} from '@/contexts/hooks'
+import {useDeveloperMode, usePlayer} from '@/util/hooks'
 import {SentPeerList} from '@/routes/types'
 import ParticipantsList from '@/components/ParticipantsList'
-import {host, selectName} from '@/state/slices/metadata'
-import {useAppDispatch, useAppSelector, useStream} from '@/state/hooks'
+import {setHost, selectName} from '@/state/slices/metadata'
+import {useAppDispatch, useAppSelector} from '@/state/hooks'
 
 import {id, peer} from '@/state/globals'
 import {
@@ -20,7 +20,7 @@ const Host: FC<RouteComponentProps> = () => {
 	const dispatch = useAppDispatch()
 	const name = useAppSelector(selectName)
 
-	const stream = useStream()
+	const stream = usePlayer()
 
 	// participant list has interface:
 	// id, stream, displayName (defaults to id)
@@ -30,8 +30,7 @@ const Host: FC<RouteComponentProps> = () => {
 	useDeveloperMode(setParticipants)
 
 	useEffect(() => {
-		// todo: consolidate?
-		dispatch(host(id))
+		dispatch(setHost(id))
 	}, [id])
 
 	useEffect(() => {

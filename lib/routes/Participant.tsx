@@ -1,8 +1,11 @@
-import React, {FC} from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import {DataConnection} from 'peerjs'
 
 import ParticipantsList from '@/components/ParticipantsList'
-import {host as dispatchHost, selectName} from '@/state/slices/metadata'
+import {setHost as setHostId, selectName} from '@/state/slices/metadata'
+import {useAppDispatch, useAppSelector} from '@/state/hooks'
+import {id, peer} from '@/state/globals'
+import {usePlayer} from '@/util/hooks'
 
 import {
 	HostPayload,
@@ -10,19 +13,17 @@ import {
 	ParticipantProps,
 	PatchedMediaStream,
 } from '@/routes/types'
-import {useAppDispatch, useAppSelector, useStream} from '@/state/hooks'
-import {id, peer} from '@/state/globals'
-import {selectParticipants, setParticipants as dispatchParticipants, SetParticipantsCallback} from '@/state/slices/peers'
 
-const {
-	useState,
-	useEffect,
-} = React
+import {
+	selectParticipants,
+	SetParticipantsCallback,
+	setParticipants as dispatchParticipants,
+} from '@/state/slices/peers'
 
 const Participant: FC<ParticipantProps> = (props: ParticipantProps) => {
 	const dispatch = useAppDispatch()
 	const name = useAppSelector(selectName)
-	const stream = useStream()
+	const stream = usePlayer()
 
 	// call management
 	const participants = useAppSelector(selectParticipants)
@@ -36,7 +37,7 @@ const Participant: FC<ParticipantProps> = (props: ParticipantProps) => {
 
 	useEffect(() => {
 		if (!props.id) return
-		dispatch(dispatchHost(props.id))
+		dispatch(setHostId(props.id))
 	}, [])
 
 	/// /////////

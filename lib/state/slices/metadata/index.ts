@@ -18,10 +18,10 @@ export const metaSlice = createSlice({
 	// note, future me:
 	// redux uses immer; state param is a 'draft state'
 	reducers: {
-		name(state, action: PayloadAction<string>) {
+		setName(state, action: PayloadAction<string>) {
 			state.name = action.payload
 		},
-		host(state, action: PayloadAction<string>) {
+		setHost(state, action: PayloadAction<string>) {
 			state.host = action.payload
 		},
 	},
@@ -35,6 +35,6 @@ export const selectShareLink = (state: RootState) => {
 	return newUrl
 }
 
-export const {name, host} = metaSlice.actions
+export const {setName, setHost} = metaSlice.actions
 
 export default metaSlice.reducer
