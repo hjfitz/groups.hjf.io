@@ -1,17 +1,12 @@
 import {useContext, useEffect} from 'react'
 
 import {
-	StreamContext,
 	PeerContext,
 	ParticipantsContext,
-	StreamCtx,
 	PeerCtx,
 } from '@/contexts/providers'
-
-export function useStream() {
-	const {stream} = useContext(StreamContext) as StreamCtx
-	return stream
-}
+import {useAppSelector} from '@/state/hooks'
+import {selectStream} from '@/state/slices/peer'
 
 export function usePeer() {
 	const peer = useContext(PeerContext) as PeerCtx
@@ -23,7 +18,7 @@ export function useParticipants() {
 }
 
 export function useDeveloperMode(setList: Function) {
-	const stream = useStream()
+	const stream = useAppSelector(selectStream)
 	useEffect(() => {
 		if (!stream) return
 		const url = new URLSearchParams(window.location.search)

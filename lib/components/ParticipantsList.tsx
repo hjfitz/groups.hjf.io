@@ -1,8 +1,9 @@
 import React, {FC} from 'react'
 
 import {ConnectedPeer} from '@/routes/types'
-import {usePeer, useStream} from '@/contexts/hooks'
 import {ParticipantPlayer} from '@/components'
+import {useAppSelector} from '@/state/hooks'
+import {selectId, selectStream} from '@/state/slices/peer'
 
 function getCols(pps: number) {
 	if (pps === 1) return 1
@@ -18,15 +19,14 @@ interface ListProps {
 }
 
 const ParticipantsList: FC<ListProps> = ({participants}: ListProps) => {
-	const {id} = usePeer()
-	const stream = useStream()
+	const id = useAppSelector(selectId)
+	const stream = useAppSelector(selectStream)
 	const cols = getCols(participants.length + 1)
 	const className = `video-container grid-cols-${cols}`
-
 	return (
 		<>
 			<section className={className}>
-				<ParticipantPlayer id={id.current} stream={stream} />
+				<ParticipantPlayer id={id} stream={stream} />
 
 				{participants.map((participant) => (
 					<ParticipantPlayer

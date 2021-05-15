@@ -10,7 +10,7 @@ const {useRef, useEffect} = React
 interface PlayerProps {
 	id: string
 	displayName?: string
-	stream: MediaStream
+	stream?: MediaStream
 }
 
 const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}: PlayerProps) => {
@@ -29,7 +29,7 @@ const ParticipantPlayer: React.FC<PlayerProps> = ({id, displayName, stream}: Pla
 
 	// need to re-play state if we get a new stream
 	useEffect(() => {
-		if (!player || !player.current) return
+		if (!player || !player.current || !stream) return
 		player.current.srcObject = stream
 		player.current.play()
 		player.current.addEventListener('playing', () => {
