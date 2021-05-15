@@ -10,7 +10,7 @@ import {
 	Participant,
 } from '@/routes'
 
-import {PeerContext, ParticipantsContext} from '@/contexts/providers'
+import {ParticipantsContext} from '@/contexts/providers'
 import {useStream, usePeer} from '@/util/hooks'
 import {UserBar} from '@/components'
 import {ConnectedPeer} from '@/routes/types'
@@ -37,14 +37,12 @@ const App = () => {
 			<div className="text-white bg-gray-900">
 				<div className="">
 					<ParticipantsContext.Provider value={{participants, setParticipants}}>
-						<PeerContext.Provider value={peerDetails}>
-							<Router className="">
-								<Home path="/" />
-								<Host path="/host" />
-								<Connector path="/join" />
-								<Participant path="/room/:id" />
-							</Router>
-						</PeerContext.Provider>
+						<Router>
+							<Home path="/" />
+							<Host path="/host" />
+							<Connector path="/join" />
+							<Participant path="/room/:id" />
+						</Router>
 					</ParticipantsContext.Provider>
 				</div>
 				<UserBar stream={stream} />

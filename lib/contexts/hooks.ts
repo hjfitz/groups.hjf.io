@@ -1,17 +1,10 @@
 import {useContext, useEffect} from 'react'
 
 import {
-	PeerContext,
 	ParticipantsContext,
-	PeerCtx,
 } from '@/contexts/providers'
 import {useAppSelector} from '@/state/hooks'
 import {selectStream} from '@/state/slices/peer'
-
-export function usePeer() {
-	const peer = useContext(PeerContext) as PeerCtx
-	return peer
-}
 
 export function useParticipants() {
 	return useContext(ParticipantsContext)
