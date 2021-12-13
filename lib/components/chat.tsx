@@ -1,6 +1,6 @@
 import { HostPayload, MessagePayload } from "@/routes/types";
-import { useAppSelector } from "@/state/hooks";
-import { selectHost } from "@/state/slices/metadata";
+//import { useAppSelector } from "@/state/hooks";
+//import { selectHost } from "@/state/slices/metadata";
 import { DataConnection } from "peerjs";
 import React, { useEffect, useState } from "react";
 import { peer } from "@/state/globals";
